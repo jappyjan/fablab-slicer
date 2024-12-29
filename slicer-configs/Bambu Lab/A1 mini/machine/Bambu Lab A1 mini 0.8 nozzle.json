@@ -1,0 +1,10 @@
+{
+  "type": "machine",
+  "from": "User",
+  "inherits": "Bambu Lab A1 mini 0.8 nozzle",
+  "is_custom_defined": "0",
+  "name": "Bambu Lab A1 mini 0.8 nozzle - For Dummies",
+  "printer_settings_id": "Bambu Lab A1 mini 0.8 nozzle - For Dummies",
+  "version": "1.9.0.23",
+  "before_layer_change_gcode": ";BEFORE_LAYER_CHANGE\n\nG92 E0\n\n;[layer_z]"
+}

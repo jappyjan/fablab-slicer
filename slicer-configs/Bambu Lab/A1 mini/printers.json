@@ -1,0 +1,30 @@
+{
+  "availableBuildPlates": [
+    "Engineering Plate",
+    "Textured PEI Plate",
+    "Textured Cool Plate",
+    "High Temp Plate"
+  ],
+  "printers": [
+    {
+      "name": "Atom",
+      "availableNozzleSizes": [0.2, 0.4, 0.6],
+      "defaultBuildPlate": "Textured PEI Plate",
+      "connection": {
+        "type": "BambuLab FTP",
+        "ipAddress": "192.168.178.150",
+        "accessCode": "888888"
+      }
+    },
+    {
+      "name": "Anderer A1 Mini",
+      "availableNozzleSizes": [0.4, 0.8],
+      "defaultBuildPlate": "Textured PEI Plate",
+      "connection": {
+        "type": "BambuLab FTP",
+        "ipAddress": "192.168.1.101",
+        "accessCode": "1235"
+      }
+    }
+  ]
+}

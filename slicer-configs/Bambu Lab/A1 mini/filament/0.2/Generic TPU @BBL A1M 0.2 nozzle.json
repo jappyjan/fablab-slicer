@@ -1,0 +1,10 @@
+{
+  "type": "filament",
+  "filament_settings_id": ["Generic TPU @BBL A1M 0.2 nozzle - For Dummies"],
+  "from": "User",
+  "inherits": "Generic TPU @BBL A1M 0.2 nozzle",
+  "is_custom_defined": "0",
+  "name": "Generic TPU @BBL A1M 0.2 nozzle - For Dummies",
+  "version": "1.9.0.23",
+  "friendlyName": "Generic TPU"
+}

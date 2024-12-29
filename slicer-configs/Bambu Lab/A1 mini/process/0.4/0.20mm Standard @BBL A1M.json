@@ -1,0 +1,10 @@
+{
+  "type": "process",
+  "from": "User",
+  "inherits": "0.20mm Standard @BBL A1M",
+  "is_custom_defined": "0",
+  "name": "0.20mm Standard @BBL A1M - For Dummies",
+  "print_settings_id": "0.20mm Standard @BBL A1M - For Dummies",
+  "version": "1.9.0.23",
+  "friendlyName": "0.20mm Standard"
+}
