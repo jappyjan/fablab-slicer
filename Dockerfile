@@ -51,8 +51,5 @@ COPY --from=appimage /app/OrcaSlicer.AppImage $SLICER_EXECUTABLE_PATH
 # Install only production dependencies
 RUN npm install --only=production
 
-# Expose the port the app runs on
-EXPOSE 3000
-
-# Start the Next.js application
-CMD ["npm", "start"]
+# Start the Next.js application with a dynamic port
+CMD ["sh", "-c", "npm start --port ${PORT:-8080}"]
