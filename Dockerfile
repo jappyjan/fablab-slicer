@@ -43,7 +43,7 @@ RUN chmod +x /app/orca.AppImage
 RUN /app/orca.AppImage --appimage-extract
 RUN mv squashfs-root ${SLICER_EXTRACTED_APPIMAGE_PATH}
 
-RUN chmod +x ${SLICER_EXECUTABLE_PATH}}
+RUN chmod +x ${SLICER_EXECUTABLE_PATH}
 RUN ls -la ${SLICER_EXTRACTED_APPIMAGE_PATH}
 
 # Copy the built Next.js application from the builder stage
