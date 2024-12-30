@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  fablab-slicer:
+    # runs on port 8080 - needs to be exposed to the outside world
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PUBLIC_LOG_LEVEL=info
+      - PORT=8080
+    volumes:
+      - slicer-configs:/app/slicer-configs
+
+  traefik:
+    # runs on port 80 - needs to be exposed to the outside world
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.file.filename=/etc/traefik/traefik.yml"
+      - "--entrypoints.web.address=:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik.yml:/etc/traefik/traefik.yml"
+
+  openvscode:
+    # runs on port 3000 internally
+    image: gitpod/openvscode-server
+    volumes:
+      - slicer-configs:/app/slicer-configs
+    labels:
+      - "traefik.http.routers.openvscode.rule=Host(`yourdomain.com`)"
+      - "traefik.http.routers.openvscode.entrypoints=web"
+      - "traefik.http.routers.openvscode.middlewares=boreale@file"
+
+  boreale:
+    # runs on port 5252 internally
+    image: lewazo/boreale
+    environment:
+      - ENCRYPTION_SALT=your_encryption_salt
+      - SECRET_KEY_BASE=your_secret_key_base
+      - SIGNING_SALT=your_signing_salt
+    volumes:
+      - boreale-data:/opt/app/data
+
+volumes:
+  slicer-configs:
+  boreale-data:

@@ -1,0 +1,6 @@
+http:
+  middlewares:
+    boreale:
+      forwardAuth:
+        address: "http://boreale:5252"
+        trustForwardHeader: true
