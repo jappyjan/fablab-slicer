@@ -16,12 +16,57 @@ COPY . .
 RUN npm run build
 
 # Stage 3: Create the production image
-FROM debian:bookworm-slim AS production
+FROM ubuntu:23.04
 
 WORKDIR /app
 
-# Install necessary packages and libraries
-RUN apt-get update && apt-get install -y curl ca-certificates libmspack-dev libgstreamerd-3-dev libsecret-1-dev libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libosmesa6-dev libssl-dev libcurl4-openssl-dev eglexternalplatform-dev libudev-dev libdbus-1-dev extra-cmake-modules libgtk2.0-dev libglew-dev libudev-dev libdbus-1-dev cmake git texinfo libwebkit2gtk-4.0-37
+RUN apt-get update && \
+    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# Add a deb-src
+RUN echo deb-src http://archive.ubuntu.com/ubuntu \
+    $(cat /etc/*release | grep VERSION_CODENAME | cut -d= -f2) main universe>> /etc/apt/sources.list 
+
+RUN apt-get update && apt-get install  -y \
+    autoconf \
+    build-essential \
+    cmake \
+    curl \
+    eglexternalplatform-dev \
+    extra-cmake-modules \
+    file \
+    git \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-libav \
+    libcairo2-dev \
+    libcurl4-openssl-dev \
+    libdbus-1-dev \
+    libglew-dev \ 
+    libglu1-mesa-dev \
+    libglu1-mesa-dev \
+    libgstreamer1.0-dev \
+    libgstreamerd-3-dev \ 
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-plugins-good1.0-dev \
+    libgtk-3-dev \
+    libgtk-3-dev \
+    libosmesa6-dev \
+    libsecret-1-dev \
+    libsoup2.4-dev \
+    libssl3 \
+    libssl-dev \
+    libtool \
+    libudev-dev \
+    libwayland-dev \
+    libwebkit2gtk-4.0-dev \
+    libxkbcommon-dev \
+    locales \
+    locales-all \
+    m4 \
+    pkgconf \
+    sudo \
+    wayland-protocols \
+    wget
 
 # Install Volta and Node.js
 RUN curl https://get.volta.sh | bash \
