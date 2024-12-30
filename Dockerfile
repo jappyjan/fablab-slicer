@@ -27,13 +27,13 @@ RUN apk add --no-cache wget curl
 ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/download/v2.2.0/OrcaSlicer_Linux_V2.2.0.AppImage
 
 # Download the AppImage, verify it, extract it, and move it to /opt/orcaslicer
-RUN curl -o ./orca.app -L \
-    ${ORCASLICER_DOWNLOAD_URL}
+RUN curl -o ./orca.app -L ${ORCASLICER_DOWNLOAD_URL}
 
 RUN ls -la
 
-RUN chmod +x ./orca.app && \
-    ./orca.app --appimage-extract
+RUN chmod +x ./orca.app 
+RUN ls -la
+RUN ./orca.app --appimage-extract
     
 RUN ls -la squashfs-root && \
     mv squashfs-root ./orcaslicer
