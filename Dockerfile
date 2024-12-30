@@ -81,4 +81,4 @@ COPY --from=builder /app/package*.json ./
 RUN npm install --only=production
 
 # Start the Next.js application with a dynamic port
-CMD ["bash", "-c", "chown -R orcaslicer:orcaslicer /configs/ /home/orcaslicer/ /prints/ /dev/stdout && exec gosu orcaslicer npm run start -- --port ${PORT:-8080}"]
+CMD ["bash", "-c", "chown -R orcaslicer:orcaslicer /configs/ /home/orcaslicer/ /prints/ /dev/stdout && exec gosu orcaslicer /root/.volta/bin/npm run start -- --port ${PORT:-8080}"]
