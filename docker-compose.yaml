@@ -21,9 +21,9 @@ services:
   traefik:
     # runs on port 80 - needs to be exposed to the outside world
     image: traefik:v2.9
-    #ports:
-    # expose only port 80 to the outside world as 8081
-    #  - "80:80"
+    ports:
+      # expose only port 80 to the outside world as 8081
+      - "80:80"
     command:
       - "--api.insecure=false"
       - "--providers.docker=true"
@@ -59,6 +59,10 @@ services:
       - PORT=4000
     #ports:
     #  - "4000:4000"
+    networks:
+      - traefik-network
+    labels:
+      - "fablab-slicer-traefik-managed-network=true"
     volumes:
       - boreale-data:/opt/app/data
 
