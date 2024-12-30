@@ -23,30 +23,30 @@ WORKDIR /app
 # Install wget
 RUN apk add --no-cache wget
 
-# Download the AppImage and extract it
-RUN wget -O OrcaSlicer.AppImage https://github.com/SoftFever/OrcaSlicer/releases/download/v2.2.0/OrcaSlicer_Linux_V2.2.0.AppImage \
-    && chmod +x OrcaSlicer.AppImage \
-    && ./OrcaSlicer.AppImage --appimage-extract
+# Download the AppImage and rename it to OrcaSlicer.AppImage
+RUN wget -O OrcaSlicer.AppImage https://github.com/SoftFever/OrcaSlicer/releases/download/v2.2.0/OrcaSlicer_Linux_V2.2.0.AppImage
 
 # Stage 3: Create the production image
-FROM bitnami/minideb:latest AS production
+FROM ubuntu:latest AS production
 
 WORKDIR /app
 
-# Install curl, ca-certificates, Node.js 20
-RUN install_packages curl ca-certificates \
-    && update-ca-certificates \
-    && curl https://get.volta.sh | bash \
+# Install curl, ca-certificates, and Node.js 20
+#RUN install_packages curl ca-certificates \
+#    && update-ca-certificates
+RUN apt-get update && apt-get install -y curl ca-certificates
+RUN curl https://get.volta.sh | bash \
     && /root/.volta/bin/volta install node@20
 
 # Add Volta to PATH
 ENV PATH="/root/.volta/bin:$PATH"
 
-# Copy the extracted AppImage files from the appimage stage
-COPY --from=appimage /app/squashfs-root /app/squashfs-root
-
 # Set environment variable for the AppImage path
-ENV SLICER_EXECUTABLE_PATH=/app/squashfs-root/AppRun
+ENV SLICER_EXECUTABLE_PATH=/app/OrcaSlicer.AppImage
+
+# Copy the AppImage from the appimage stage
+COPY --from=appimage /app/OrcaSlicer.AppImage $SLICER_EXECUTABLE_PATH
+RUN chmod +x $SLICER_EXECUTABLE_PATH
 
 # Copy the built Next.js application from the builder stage
 COPY --from=builder /app/.next ./.next
