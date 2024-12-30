@@ -20,10 +20,8 @@ FROM ubuntu:latest AS production
 
 WORKDIR /app
 
-# Install curl, ca-certificates, and Node.js 20
-#RUN install_packages curl ca-certificates \
-#    && update-ca-certificates
-RUN apt-get update && apt-get install -y curl ca-certificates
+# Install curl, ca-certificates, Node.js 20, and OpenGL libraries
+RUN apt-get update && apt-get install -y curl ca-certificates libgl1
 RUN curl https://get.volta.sh | bash \
     && /root/.volta/bin/volta install node@20
 
