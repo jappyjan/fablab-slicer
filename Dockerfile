@@ -30,26 +30,32 @@ RUN wget -O OrcaSlicer.AppImage https://github.com/SoftFever/OrcaSlicer/releases
 RUN chmod +x OrcaSlicer.AppImage
 
 # Stage 3: Create the production image
-FROM linuxserver/orcaslicer:latest AS production
+FROM bitnami/minideb:latest AS production
 
 WORKDIR /app
 
-# Install Node.js 20
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
+# Install curl, ca-certificates, and Node.js 20
+RUN install_packages curl ca-certificates \
+    && update-ca-certificates \
+    && curl https://get.volta.sh | bash \
+    && /root/.volta/bin/volta install node@20
+
+# Add Volta to PATH
+ENV PATH="/root/.volta/bin:$PATH"
 
 # Set environment variable for the AppImage path
-ENV SLICER_EXECUTABLE_PATH=/tmp/orca.app
+ENV SLICER_EXECUTABLE_PATH=/app/OrcaSlicer.AppImage
+
+# Copy the AppImage from the appimage stage
+COPY --from=appimage /app/OrcaSlicer.AppImage $SLICER_EXECUTABLE_PATH
+RUN chmod +x $SLICER_EXECUTABLE_PATH
 
 # Copy the built Next.js application from the builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package*.json ./
 
-# Copy the AppImage from the appimage stage
-COPY --from=appimage /app/OrcaSlicer.AppImage $SLICER_EXECUTABLE_PATH
-
 # Install only production dependencies
 RUN npm install --only=production
 
 # Start the Next.js application with a dynamic port
-CMD ["sh", "-c", "npm start --port ${PORT:-8080}"]
+CMD ["sh", "-c", "npm run start -- --port ${PORT:-8080}"]

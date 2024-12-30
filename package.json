@@ -9,8 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "docker:build": "docker build -t fablab-slicer .",
-    "docker:run": "docker run --rm --name fablab-slicer -p 3000:3000 -v $(pwd)/slicer-configs:/app/slicer-configs -e PUBLIC_LOG_LEVEL=debug fablab-slicer",
-    "docker:shell": "docker run --rm -it --name fablab-slicer-shell -p 3000:3000 -v $(pwd)/slicer-configs:/app/slicer-configs -e PUBLIC_LOG_LEVEL=debug --entrypoint /bin/sh fablab-slicer"
+    "docker:run": "docker run --rm --name fablab-slicer -p 8080:8080 -v $(pwd)/slicer-configs:/app/slicer-configs -e PUBLIC_LOG_LEVEL=debug fablab-slicer",
+    "docker:shell": "docker run --rm -it --name fablab-slicer-shell -p 8080:8080 -v $(pwd)/slicer-configs:/app/slicer-configs -e PUBLIC_LOG_LEVEL=debug --entrypoint /bin/sh fablab-slicer"
   },
   "dependencies": {
     "@types/node": "^20.11.24",
