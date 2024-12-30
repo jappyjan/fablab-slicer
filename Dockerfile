@@ -19,8 +19,7 @@ RUN npm run build
 FROM debian:bullseye
 
 # Set environment variable for the AppImage path
-ENV SLICER_EXTRACTED_APPIMAGE_PATH=/app/orcaslicer
-ENV SLICER_EXECUTABLE_PATH=${SLICER_EXTRACTED_APPIMAGE_PATH}/AppRun
+ENV SLICER_EXECUTABLE_PATH=/orcaslicer/squashfs-root/AppRun
 
 # Set the OrcaSlicer version as an environment variable
 ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/download/v2.2.0/OrcaSlicer_Linux_Ubuntu2404_V2.2.0.AppImage
