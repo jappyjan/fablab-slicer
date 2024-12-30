@@ -31,7 +31,8 @@ RUN curl https://get.volta.sh | bash \
 ENV PATH="/root/.volta/bin:$PATH"
 
 # Set environment variable for the AppImage path
-ENV SLICER_EXECUTABLE_PATH=/app/orcaslicer
+ENV SLICER_EXTRACTED_APPIMAGE_PATH=/app/orcaslicer
+ENV SLICER_EXECUTABLE_PATH=${SLICER_EXTRACTED_APPIMAGE_PATH}/AppRun
 
 # Set the OrcaSlicer version as an environment variable
 ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/download/v2.2.0/OrcaSlicer_Linux_Ubuntu2404_V2.2.0.AppImage
@@ -40,10 +41,10 @@ ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/dow
 RUN curl -o /app/orca.AppImage -L ${ORCASLICER_DOWNLOAD_URL}
 RUN chmod +x /app/orca.AppImage 
 RUN /app/orca.AppImage --appimage-extract
-RUN mv squashfs-root ${SLICER_EXECUTABLE_PATH}
+RUN mv squashfs-root ${SLICER_EXTRACTED_APPIMAGE_PATH}
 
-RUN chmod +x ${SLICER_EXECUTABLE_PATH}
-RUN ls -la ${SLICER_EXECUTABLE_PATH}
+RUN chmod +x ${SLICER_EXECUTABLE_PATH}}
+RUN ls -la ${SLICER_EXTRACTED_APPIMAGE_PATH}
 
 # Copy the built Next.js application from the builder stage
 COPY --from=builder /app/.next ./.next
