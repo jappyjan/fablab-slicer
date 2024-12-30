@@ -29,10 +29,10 @@ ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/dow
 # Download the AppImage, verify it, extract it, and move it to /opt/orcaslicer
 RUN curl -o ./orca.AppImage -L ${ORCASLICER_DOWNLOAD_URL}
 
-RUN ls -la
+RUN ls -la /app
 
 RUN chmod +x /app/orca.AppImage 
-RUN ls -la
+RUN ls -la /app
 RUN /app/orca.AppImage --appimage-extract
     
 RUN ls -la squashfs-root && \
