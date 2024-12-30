@@ -34,8 +34,8 @@ FROM bitnami/minideb:latest AS production
 
 WORKDIR /app
 
-# Install curl, ca-certificates, and Node.js 20
-RUN install_packages curl ca-certificates \
+# Install curl, ca-certificates, Node.js 20, and FUSE
+RUN install_packages curl ca-certificates fuse \
     && update-ca-certificates \
     && curl https://get.volta.sh | bash \
     && /root/.volta/bin/volta install node@20
