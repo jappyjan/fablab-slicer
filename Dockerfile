@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Stage 3: Create the production image
-FROM ubuntu:latest AS production
+FROM ubuntu:22.04 AS production
 
 WORKDIR /app
 
