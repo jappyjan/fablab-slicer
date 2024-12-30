@@ -63,6 +63,8 @@ services:
       - traefik-network
     labels:
       - "fablab-slicer-traefik-managed-network=true"
+      # expose port 4000 to the outside world
+      - "traefik.http.services.boreale.loadbalancer.servers.port=4000"
     volumes:
       - boreale-data:/opt/app/data
 
