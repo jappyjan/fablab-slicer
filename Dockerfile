@@ -26,7 +26,7 @@ ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/dow
 
 RUN apt update -y \
     && apt install -y --no-install-recommends --allow-unauthenticated \
-        ca-certificates lxde gtk2-engines-murrine gnome-themes-standard gtk2-engines-pixbuf gtk2-engines-murrine arc-theme libwebkit2gtk-4.0-37 \
+        gosu ca-certificates lxde gtk2-engines-murrine gnome-themes-standard gtk2-engines-pixbuf gtk2-engines-murrine arc-theme libwebkit2gtk-4.0-37 \
         freeglut3 libgtk2.0-dev libwxgtk3.0-gtk3-dev libwx-perl libxmu-dev libgl1-mesa-glx libgl1-mesa-dri \
         xdg-utils locales pcmanfm libgtk-3-dev libglew-dev libudev-dev libdbus-1-dev zlib1g-dev locales locales-all \
         libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base \
@@ -81,4 +81,4 @@ COPY --from=builder /app/package*.json ./
 RUN npm install --only=production
 
 # Start the Next.js application with a dynamic port
-CMD ["bash", "-c", "chown -R orcaslicer:orcaslicer /configs/ /home/orcaslicer/ /prints/ /dev/stdout && ", "npm run start -- --port ${PORT:-8080}"]
+CMD ["bash", "-c", "chown -R orcaslicer:orcaslicer /configs/ /home/orcaslicer/ /prints/ /dev/stdout && exec gosu 'npm run start -- --port ${PORT:-8080}'"]
