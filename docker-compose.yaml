@@ -1,5 +1,9 @@
 version: "3.8"
 
+networks:
+  traefik-network:
+    driver: bridge
+
 services:
   fablab-slicer:
     # runs on port 8080 - needs to be exposed to the outside world
@@ -25,6 +29,8 @@ services:
       - "--providers.docker=true"
       - "--providers.file.filename=/etc/traefik/boreale-middleware.yml"
       - "--entrypoints.web.address=:80"
+    networks:
+      - traefik-network
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./traefik:/etc/traefik"
@@ -38,6 +44,8 @@ services:
       - "traefik.http.routers.openvscode.rule=Host(`localhost`)"
       - "traefik.http.routers.openvscode.entrypoints=web"
       - "traefik.http.routers.openvscode.middlewares=boreale@file"
+    networks:
+      - traefik-network
 
   boreale:
     # runs on port 4000 internally
