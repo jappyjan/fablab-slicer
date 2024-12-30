@@ -9,20 +9,25 @@ services:
     environment:
       - PUBLIC_LOG_LEVEL=info
       - PORT=8080
+    ports:
+      - "8080:8080"
     volumes:
       - slicer-configs:/app/slicer-configs
 
   traefik:
     # runs on port 80 - needs to be exposed to the outside world
     image: traefik:v2.9
+    ports:
+      # expose only port 80 to the outside world as 8081
+      - "80:80"
     command:
-      - "--api.insecure=true"
+      - "--api.insecure=false"
       - "--providers.docker=true"
-      - "--providers.file.filename=/etc/traefik/traefik.yml"
+      - "--providers.file.filename=/etc/traefik/boreale-middleware.yml"
       - "--entrypoints.web.address=:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik.yml:/etc/traefik/traefik.yml"
+      - "./traefik:/etc/traefik"
 
   openvscode:
     # runs on port 3000 internally
@@ -30,17 +35,20 @@ services:
     volumes:
       - slicer-configs:/app/slicer-configs
     labels:
-      - "traefik.http.routers.openvscode.rule=Host(`yourdomain.com`)"
+      - "traefik.http.routers.openvscode.rule=Host(`localhost`)"
       - "traefik.http.routers.openvscode.entrypoints=web"
       - "traefik.http.routers.openvscode.middlewares=boreale@file"
 
   boreale:
-    # runs on port 5252 internally
+    # runs on port 4000 internally
     image: lewazo/boreale
     environment:
-      - ENCRYPTION_SALT=your_encryption_salt
-      - SECRET_KEY_BASE=your_secret_key_base
-      - SIGNING_SALT=your_signing_salt
+      - ENCRYPTION_SALT=3VRl4Jk9W6586M55xRZzpTxcUCzefoXpTHZtryBpmcY
+      - SECRET_KEY_BASE=O15X2mP9Zp7cZVm0fO6YYJ7R4MYwq3lTllXyw6Zmwx07ydLXuU-NN_2QiAduM_UlZ9aV01-yW0Ss_LYjp0qLpQ
+      - SIGNING_SALT=TjPq_2gflG4_rsYzbU0Rpl4NRoS9CQ23aDLzM6vsUbU
+      - PORT=4000
+    ports:
+      - "4000:4000"
     volumes:
       - boreale-data:/opt/app/data
 
