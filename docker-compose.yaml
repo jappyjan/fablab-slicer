@@ -9,17 +9,17 @@ services:
     environment:
       - PUBLIC_LOG_LEVEL=info
       - PORT=8080
-    ports:
-      - "8080:8080"
+    #ports:
+    #  - "8080:8080"
     volumes:
       - slicer-configs:/app/slicer-configs
 
   traefik:
     # runs on port 80 - needs to be exposed to the outside world
     image: traefik:v2.9
-    ports:
-      # expose only port 80 to the outside world as 8081
-      - "80:80"
+    #ports:
+    # expose only port 80 to the outside world as 8081
+    #  - "80:80"
     command:
       - "--api.insecure=false"
       - "--providers.docker=true"
@@ -47,8 +47,8 @@ services:
       - SECRET_KEY_BASE=O15X2mP9Zp7cZVm0fO6YYJ7R4MYwq3lTllXyw6Zmwx07ydLXuU-NN_2QiAduM_UlZ9aV01-yW0Ss_LYjp0qLpQ
       - SIGNING_SALT=TjPq_2gflG4_rsYzbU0Rpl4NRoS9CQ23aDLzM6vsUbU
       - PORT=4000
-    ports:
-      - "4000:4000"
+    #ports:
+    #  - "4000:4000"
     volumes:
       - boreale-data:/opt/app/data
 
