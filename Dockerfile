@@ -48,10 +48,20 @@ RUN curl -sSL ${ORCASLICER_DOWNLOAD_URL} > /orcaslicer/orcaslicer-dist/orcaslice
 
 #RUN rm -rf /var/lib/apt/lists/*
 #RUN apt-get autoclean 
-#RUN chmod -R 777 /orcaslicer/
 
-RUN ls -la /orcaslicer/orcaslicer-dist
-RUN ls -la /orcaslicer/squashfs-root
+RUN chmod -R 777 /orcaslicer/
+RUN groupadd orcaslicer
+RUN useradd -g orcaslicer --create-home --home-dir /home/orcaslicer orcaslicer
+RUN mkdir -p /orcaslicer
+RUN mkdir -p /configs 
+RUN mkdir -p /prints/ 
+RUN chown -R orcaslicer:orcaslicer /orcaslicer/ /home/orcaslicer/ /prints/ /configs/ 
+RUN locale-gen en_US 
+RUN mkdir /configs/.local 
+RUN mkdir -p /configs/.config/ 
+RUN ln -s /configs/.config/ /home/orcaslicer/
+RUN mkdir -p /home/orcaslicer/.config/
+RUN mkdir -p /home/orcaslicer/.config/OrcaSlicer/
 
 WORKDIR /app
 
@@ -71,4 +81,4 @@ COPY --from=builder /app/package*.json ./
 RUN npm install --only=production
 
 # Start the Next.js application with a dynamic port
-CMD ["sh", "-c", "npm run start -- --port ${PORT:-8080}"]
+CMD ["bash", "-c", "chown -R orcaslicer:orcaslicer /configs/ /home/orcaslicer/ /prints/ /dev/stdout && ", "npm run start -- --port ${PORT:-8080}"]
