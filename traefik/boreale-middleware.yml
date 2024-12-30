@@ -1,7 +1,0 @@
-http:
-  middlewares:
-    boreale:
-      forwardAuth:
-        address: "https://boreale:4000"
-        tls:
-          insecureSkipVerify: true
