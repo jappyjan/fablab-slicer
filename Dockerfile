@@ -21,7 +21,7 @@ FROM ubuntu:latest AS production
 WORKDIR /app
 
 # Install curl, ca-certificates, Node.js 20, OpenGL, EGL, and GTK+ 3 libraries
-RUN apt-get update && apt-get install -y curl ca-certificates libmspack-dev libgstreamerd-3-dev libsecret-1-dev libosmesa6-dev libssl-dev libcurl4-openssl-dev eglexternalplatform-dev libudev-dev libdbus-1-dev extra-cmake-modules libgtk2.0-dev libglew-dev libudev-dev libdbus-1-dev cmake git texinfo
+RUN apt-get update && apt-get install -y curl ca-certificates libmspack-dev libgstreamerd-3-dev libsecret-1-dev libwebkit2gtk-4.0-dev libosmesa6-dev libssl-dev libcurl4-openssl-dev eglexternalplatform-dev libudev-dev libdbus-1-dev extra-cmake-modules libgtk2.0-dev libglew-dev libudev-dev libdbus-1-dev cmake git texinfo
 RUN curl https://get.volta.sh | bash \
     && /root/.volta/bin/volta install node@20
 
