@@ -51,7 +51,7 @@ RUN apt-get autoclean
 RUN chmod -R 777 /orcaslicer/
 
 RUN ls -la /orcaslicer/orcaslicer-dist
-RUN ls -la /orcaslicer/orcaslicer-dist/squashfs-root
+RUN ls -la /orcaslicer/squashfs-root
 
 WORKDIR /app
 
