@@ -15,29 +15,6 @@ COPY . .
 # Build the Next.js application
 RUN npm run build
 
-# Stage 2: Download and prepare the AppImage
-FROM node:20-alpine AS appimage
-
-WORKDIR /app
-
-# Install wget and curl
-RUN apk add --no-cache wget curl
-
-# Set the OrcaSlicer version as an environment variable
-ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/download/v2.2.0/OrcaSlicer_Linux_V2.2.0.AppImage
-
-# Download the AppImage, verify it, extract it, and move it to /opt/orcaslicer
-RUN curl -o ./orca.AppImage -L ${ORCASLICER_DOWNLOAD_URL}
-
-RUN ls -la /app
-
-RUN chmod +x /app/orca.AppImage 
-RUN ls -la /app
-RUN /app/orca.AppImage --appimage-extract
-    
-RUN ls -la squashfs-root && \
-    mv squashfs-root ./orcaslicer
-
 # Stage 3: Create the production image
 FROM ubuntu:latest AS production
 
@@ -56,8 +33,20 @@ ENV PATH="/root/.volta/bin:$PATH"
 # Set environment variable for the AppImage path
 ENV SLICER_EXECUTABLE_PATH=/app/orcaslicer
 
-# Copy the extracted OrcaSlicer from the appimage stage to the location inside the ENV variable
-COPY --from=appimage /app/orcaslicer ${SLICER_EXECUTABLE_PATH}
+# Set the OrcaSlicer version as an environment variable
+ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/download/v2.2.0/OrcaSlicer_Linux_Ubuntu2404_V2.2.0.AppImage
+
+# Download the AppImage, verify it, extract it, and move it to /opt/orcaslicer
+RUN curl -o /app/orca.AppImage -L ${ORCASLICER_DOWNLOAD_URL}
+
+RUN ls -la /app
+
+RUN chmod +x /app/orca.AppImage 
+RUN ls -la /app
+RUN /app/orca.AppImage --appimage-extract
+    
+RUN ls -la squashfs-root && \
+    mv squashfs-root ${SLICER_EXECUTABLE_PATH}
 
 # Copy the built Next.js application from the builder stage
 COPY --from=builder /app/.next ./.next
