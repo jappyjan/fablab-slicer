@@ -32,9 +32,10 @@ RUN apt update -y \
         libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base \
         gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools \
         gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio \
-        jq curl git firefox-esr \
-    && apt autoclean -y \
-    && apt autoremove -y
+        jq curl git 
+        #firefox-esr 
+#    && apt autoclean -y \
+#    && apt autoremove -y
 
 WORKDIR /orcaslicer
 
@@ -45,9 +46,9 @@ RUN curl -sSL ${ORCASLICER_DOWNLOAD_URL} > /orcaslicer/orcaslicer-dist/orcaslice
     && dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=orcaslicer-dist/orcaslicer.AppImage \
     && bash -c "/orcaslicer/orcaslicer-dist/orcaslicer.AppImage --appimage-extract"
 
-RUN rm -rf /var/lib/apt/lists/*
-RUN apt-get autoclean 
-RUN chmod -R 777 /orcaslicer/
+#RUN rm -rf /var/lib/apt/lists/*
+#RUN apt-get autoclean 
+#RUN chmod -R 777 /orcaslicer/
 
 RUN ls -la /orcaslicer/orcaslicer-dist
 RUN ls -la /orcaslicer/squashfs-root
