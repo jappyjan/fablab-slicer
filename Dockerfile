@@ -38,15 +38,12 @@ ENV ORCASLICER_DOWNLOAD_URL=https://github.com/SoftFever/OrcaSlicer/releases/dow
 
 # Download the AppImage, verify it, extract it, and move it to /opt/orcaslicer
 RUN curl -o /app/orca.AppImage -L ${ORCASLICER_DOWNLOAD_URL}
-
-RUN ls -la /app
-
 RUN chmod +x /app/orca.AppImage 
-RUN ls -la /app
 RUN /app/orca.AppImage --appimage-extract
-    
-RUN ls -la squashfs-root && \
-    mv squashfs-root ${SLICER_EXECUTABLE_PATH}
+RUN mv squashfs-root ${SLICER_EXECUTABLE_PATH}
+
+RUN chmod +x ${SLICER_EXECUTABLE_PATH}
+RUN ls -la ${SLICER_EXECUTABLE_PATH}
 
 # Copy the built Next.js application from the builder stage
 COPY --from=builder /app/.next ./.next
