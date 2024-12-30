@@ -29,6 +29,7 @@ services:
       - "--providers.docker=true"
       - "--providers.file.filename=/etc/traefik/boreale-middleware.yml"
       - "--entrypoints.web.address=:80"
+      - "--providers.docker.constraints=Label(`fablab-slicer-traefik-managed-network`, `true`)"
     networks:
       - traefik-network
     volumes:
@@ -41,6 +42,7 @@ services:
     volumes:
       - slicer-configs:/app/slicer-configs
     labels:
+      - "fablab-slicer-traefik-managed-network=true"
       - "traefik.http.routers.openvscode.rule=Host(`localhost`)"
       - "traefik.http.routers.openvscode.entrypoints=web"
       - "traefik.http.routers.openvscode.middlewares=boreale@file"
