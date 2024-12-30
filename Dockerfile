@@ -20,8 +20,7 @@ FROM ubuntu:23.04
 
 WORKDIR /app
 
-RUN apt-get update && \
-    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN apt-get update
 
 # Add a deb-src
 RUN echo deb-src http://archive.ubuntu.com/ubuntu \
