@@ -28,8 +28,7 @@ WORKDIR /app
 # Install Volta and Node.js
 RUN apt-get update && apt-get install -y curl bash tar
 RUN curl https://get.volta.sh | bash
-RUN find / -name "volta" 2>/dev/null
-#ENV PATH="/root/.volta/bin:$PATH"
+ENV PATH="/config/.volta/bin:$PATH"
 RUN volta install node@20
 
 # Copy the built Next.js application from the builder stage
