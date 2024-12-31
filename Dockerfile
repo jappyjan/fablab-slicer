@@ -26,6 +26,7 @@ ENV SLICER_EXECUTABLE_PATH=/opt/orcaslicer/AppRun
 WORKDIR /app
 
 # Install Volta and Node.js
+RUN apt-get update && apt-get install -y curl bash tar
 RUN curl https://get.volta.sh | bash
 RUN which volta
 #ENV PATH="/root/.volta/bin:$PATH"
