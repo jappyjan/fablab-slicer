@@ -26,11 +26,9 @@ ENV SLICER_EXECUTABLE_PATH=/opt/orcaslicer/AppRun
 WORKDIR /app
 
 # Install Volta and Node.js
-RUN curl https://get.volta.sh | bash \
-    && /root/.volta/bin/volta install node@20
-
-# Add Volta to PATH
-ENV PATH="/root/.volta/bin:$PATH"
+RUN curl https://get.volta.sh | bash
+#ENV PATH="/root/.volta/bin:$PATH"
+RUN volta install node@20
 
 # Copy the built Next.js application from the builder stage
 COPY --from=builder /app/.next ./.next
