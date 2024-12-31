@@ -27,6 +27,7 @@ WORKDIR /app
 
 # Install Volta and Node.js
 RUN curl https://get.volta.sh | bash
+RUN which volta
 #ENV PATH="/root/.volta/bin:$PATH"
 RUN volta install node@20
 
