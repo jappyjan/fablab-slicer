@@ -40,4 +40,4 @@ RUN npm install --only=production
 
 ENTRYPOINT []
 # Start the Next.js application with a dynamic port
-CMD [ "/config/.volta/bin/npm", "run", "start", "--", "--port", "$PORT" ]
+CMD [ "/config/.volta/bin/npm", "run", "start" ]
