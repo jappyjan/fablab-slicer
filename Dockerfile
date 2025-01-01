@@ -39,4 +39,4 @@ COPY --from=builder /app/package*.json ./
 RUN npm install --only=production
 
 # Start the Next.js application with a dynamic port
-ENTRYPOINT [ "/config/.volta/bin/npm", "run", "start", "--", "--port", "${PORT:-8080}" ]
+ENTRYPOINT [ "/config/.volta/bin/npm run start" ]
