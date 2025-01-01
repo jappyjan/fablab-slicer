@@ -1,7 +1,7 @@
 {
   "printers": [
     {
-      "name": "Klipper no auth",
+      "name": "Anycubic 4MAX",
       "availableNozzleSizes": [0.4],
       "defaultBuildPlate": "Textured PEI Plate",
       "connection": {

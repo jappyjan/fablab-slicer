@@ -21,7 +21,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     "slicer-configs",
     manufacturer as string,
     model as string,
-    "thumbnail.jpg"
+    "thumbnail.png"
   );
 
   if (!existsSync(thumbnailPath)) {
