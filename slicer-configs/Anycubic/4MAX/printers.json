@@ -1,0 +1,16 @@
+{
+  "printers": [
+    {
+      "name": "Klipper no auth",
+      "availableNozzleSizes": [0.4],
+      "defaultBuildPlate": "Textured PEI Plate",
+      "connection": {
+        "type": "Klipper",
+        "host": "4max.local",
+        "port": 7125,
+        "routePrefix": null,
+        "apiKey": null
+      }
+    }
+  ]
+}

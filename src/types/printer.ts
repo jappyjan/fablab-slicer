@@ -15,10 +15,18 @@ export const PrintSettingsSchema = z.object({
 // TypeScript types from Zod schemas
 export type PrintSettings = z.infer<typeof PrintSettingsSchema>;
 
-interface BambulabFTPConnectionDetails {
+export interface BambulabFTPConnectionDetails {
   type: "BambuLab FTP";
   ipAddress: string;
   accessCode: string;
+}
+
+export interface KlipperConnectionDetails {
+  type: "Klipper";
+  host: string;
+  port: number;
+  routePrefix: string | null;
+  apiKey: string | null;
 }
 
 export interface PrinterDefinition {
@@ -27,8 +35,25 @@ export interface PrinterDefinition {
   defaultBuildPlate: string;
 }
 
-export interface PrinterWithConnectionDefinition extends PrinterDefinition {
-  connection: BambulabFTPConnectionDetails;
+export function isPrinterWithBambuLabFTPConnectionDetails(
+  printer: PrinterWithConnectionDefinition
+): printer is PrinterWithConnectionDefinition<BambulabFTPConnectionDetails> {
+  return printer.connection.type === "BambuLab FTP";
+}
+
+export function isPrinterWithKlipperConnectionDetails(
+  printer: PrinterWithConnectionDefinition
+): printer is PrinterWithConnectionDefinition<KlipperConnectionDetails> {
+  return printer.connection.type === "Klipper";
+}
+
+type AnyConnectionType =
+  | BambulabFTPConnectionDetails
+  | KlipperConnectionDetails;
+export interface PrinterWithConnectionDefinition<
+  TConnectionType extends AnyConnectionType = AnyConnectionType
+> extends PrinterDefinition {
+  connection: TConnectionType;
 }
 
 export interface PrinterModelDefinition {

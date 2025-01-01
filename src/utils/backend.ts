@@ -7,7 +7,7 @@ export interface BackendSuccessResponse<TData> {
 
 export interface BackendErrorResponse {
   status: "error";
-  error: ErrorType | ErrorType[];
+  error: string;
 }
 
 export type BackendResponse<TData> =
@@ -21,7 +21,7 @@ export function sendError(
   Console.error(error);
   return {
     status: "error",
-    error,
+    error: Array.isArray(error) ? error.join("\n") : error.toString(),
   };
 }
 

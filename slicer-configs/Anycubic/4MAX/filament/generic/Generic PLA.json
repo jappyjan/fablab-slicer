@@ -1,0 +1,9 @@
+{
+  "type": "filament",
+  "filament_settings_id": ["Generic PLA - For Dummies"],
+  "from": "User",
+  "inherits": "My Generic PLA",
+  "is_custom_defined": "0",
+  "name": "Generic PLA",
+  "version": "1.9.0.23"
+}

@@ -136,19 +136,17 @@ async function getFilamentConfigurationsForNozzleSizeAndPrinter(
       configurationsDirectory = rootConfigurationFilePath;
   }
 
-  const fullPrinterName = `${manufacturer} ${model} ${nozzleSize} nozzle`;
-
   if (configurationType === "machine") {
     const configFileName = join(
       configurationsDirectory,
-      `${fullPrinterName}.json`
+      `${nozzleSize} nozzle.json`
     );
     const content = await readFile(configFileName, "utf-8");
     const parsedContent = JSON.parse(content);
     return [
       {
         path: configFileName.substring(rootConfigDirectory.length),
-        name: parsedContent.friendlyName || parsedContent.name,
+        name: parsedContent.name,
         content: parsedContent,
       },
     ];
@@ -170,17 +168,9 @@ async function getFilamentConfigurationsForNozzleSizeAndPrinter(
     content: JSON.parse(file.content),
   }));
 
-  const matchingConfigFiles = parsedConfigFiles.filter((config) => {
-    if (config.content.compatible_printers === undefined) {
-      return true;
-    }
-
-    return config.content.compatible_printers.includes(fullPrinterName);
-  });
-
-  return matchingConfigFiles.map((config) => ({
+  return parsedConfigFiles.map((config) => ({
     path: config.path.substring(rootConfigDirectory.length),
-    name: config.content.friendlyName || config.content.name,
+    name: config.content.name,
     content: config.content,
   }));
 }

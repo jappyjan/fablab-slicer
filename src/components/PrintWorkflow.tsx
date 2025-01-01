@@ -100,16 +100,11 @@ export function PrintWorkflow() {
 
       const response = await handleFileUpload(formData);
       if (response.status !== "success") {
-        let errorMsg = "Unknown error";
-        if (Array.isArray(response.error)) {
-          errorMsg = response.error.join("\n");
-        } else {
-          errorMsg = response.error.toString();
-        }
-        setErrorMessage(errorMsg);
+        setErrorMessage(response.error);
         return;
       }
 
+      console.log(response);
       const { fileName } = response.data;
 
       setSlicedFileName(fileName);

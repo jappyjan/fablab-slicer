@@ -3,8 +3,7 @@
   "from": "User",
   "inherits": "0.24mm Fine @BBL A1M 0.8 nozzle",
   "is_custom_defined": "0",
-  "name": "0.24mm Fine @BBL A1M - For Dummies",
   "print_settings_id": "0.24mm Fine @BBL A1M - For Dummies",
   "version": "1.9.0.23",
-  "friendlyName": "0.24mm Fine"
+  "name": "0.24mm Fine"
 }

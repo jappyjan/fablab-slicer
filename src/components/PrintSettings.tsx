@@ -55,6 +55,13 @@ export function PrintSettings({
 
   useEffect(() => {
     onBuildPlateTypeChange(selectedPrinter.defaultBuildPlate);
+
+    const newPrinterHasSelectedNozzleSize =
+      nozzleSize && selectedPrinter.availableNozzleSizes.includes(nozzleSize);
+
+    if (!newPrinterHasSelectedNozzleSize) {
+      onNozzleSizeChange(selectedPrinter.availableNozzleSizes[0] ?? null);
+    }
   }, [selectedPrinter]);
 
   return (

@@ -1,0 +1,16 @@
+{
+  "type": "machine",
+  "from": "User",
+  "inherits": "MyKlipper 0.4 nozzle",
+  "is_custom_defined": "0",
+  "machine_max_acceleration_x": ["4250", "4250"],
+  "machine_max_acceleration_y": ["4250", "4250"],
+  "machine_max_acceleration_z": ["60", "200"],
+  "machine_start_gcode": "PRINT_START EXTRUDER=[nozzle_temperature_initial_layer] BED=[bed_temperature_initial_layer_single]",
+  "name": "Anycubic 4MAX 0.4 nozzle",
+  "printable_area": ["0x0", "210x0", "210x210", "0x210"],
+  "printable_height": "300",
+  "printer_settings_id": "Anycubic 4MAX 0.4 nozzle",
+  "version": "1.9.0.2",
+  "before_layer_change_gcode": ";BEFORE_LAYER_CHANGE\n\nG92 E0\n\n;[layer_z]"
+}

@@ -3,8 +3,7 @@
   "from": "User",
   "inherits": "0.12mm Draft @BBL A1M 0.2 nozzle",
   "is_custom_defined": "0",
-  "name": "0.12mm Draft @BBL A1M 0.2 nozzle - For Dummies",
   "print_settings_id": "0.12mm Draft @BBL A1M 0.2 nozzle - For Dummies",
   "version": "1.9.0.23",
-  "friendlyName": "0.12mm Draft"
+  "name": "0.12mm Draft"
 }

@@ -1,9 +1,9 @@
 {
   "type": "process",
   "from": "User",
-  "inherits": "0.24mm Draft @BBL A1M",
+  "inherits": "0.24mm Draft @MyKlipper",
   "is_custom_defined": "0",
-  "print_settings_id": "0.24mm Draft @BBL A1M - For Dummies",
+  "print_settings_id": "0.24mm Draft @MyKlipper - For Dummies",
   "version": "1.9.0.23",
   "name": "0.24mm Draft"
 }

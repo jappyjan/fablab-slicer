@@ -4,7 +4,6 @@
   "from": "User",
   "inherits": "Generic PLA @BBL A1M",
   "is_custom_defined": "0",
-  "name": "Generic PLA @BBL A1M - For Dummies",
   "version": "1.9.0.23",
-  "friendlyName": "Generic PLA"
+  "name": "Generic PLA"
 }

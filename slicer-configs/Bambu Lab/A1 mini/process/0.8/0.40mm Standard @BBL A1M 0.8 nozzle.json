@@ -3,8 +3,7 @@
   "from": "User",
   "inherits": "0.40mm Standard @BBL A1M 0.8 nozzle",
   "is_custom_defined": "0",
-  "name": "0.40mm Standard @BBL A1M 0.8 nozzle - For Dummies",
   "print_settings_id": "0.40mm Standard @BBL A1M 0.8 nozzle - For Dummies",
   "version": "1.9.0.23",
-  "friendlyName": "0.40mm Standard"
+  "name": "0.40mm Standard"
 }

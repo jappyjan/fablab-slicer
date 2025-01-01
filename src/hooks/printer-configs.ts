@@ -1,10 +1,11 @@
 import { getPrinterConfigurations } from "@/services/printerConfigService";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getAllPrinterDefinitions } from "@/services/printerConfigService";
 import {
   PrinterConfigurations,
   PrinterWithModelDefinition,
 } from "@/types/printer";
+import { useDebounce } from "@/hooks/use-debounce";
 
 const cache = new Map<string, any>();
 
@@ -23,13 +24,7 @@ export function usePrinters() {
     getAllPrinterDefinitions()
       .then((response) => {
         if (response.status !== "success") {
-          let errorMsg = "Unknown error";
-          if (Array.isArray(response.error)) {
-            errorMsg = response.error.join("\n");
-          } else {
-            errorMsg = response.error.toString();
-          }
-          setError(errorMsg);
+          setError(response.error);
           return;
         }
         setPrinters(response.data);
@@ -52,7 +47,7 @@ export function usePrinterConfigs(
   const [configs, setConfigs] = useState<PrinterConfigurations | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchConfigs = useCallback(async () => {
     if (!manufacturer || !model || !nozzleSize) {
       setConfigs(null);
       setIsFetching(false);
@@ -66,25 +61,30 @@ export function usePrinterConfigs(
     }
 
     setIsFetching(true);
-    getPrinterConfigurations(manufacturer, model, nozzleSize)
-      .then((response) => {
-        if (response.status !== "success") {
-          let errorMsg = "Unknown error";
-          if (Array.isArray(response.error)) {
-            errorMsg = response.error.join("\n");
-          } else {
-            errorMsg = response.error.toString();
-          }
-          setError(errorMsg);
-          return;
-        }
-        setConfigs(response.data);
-        cache.set(cacheKey, response.data);
-      })
-      .finally(() => {
-        setIsFetching(false);
-      });
+    try {
+      const response = await getPrinterConfigurations(
+        manufacturer,
+        model,
+        nozzleSize
+      );
+
+      if (response.status !== "success") {
+        setError(response.error);
+        return;
+      }
+
+      setConfigs(response.data);
+      cache.set(cacheKey, response.data);
+    } finally {
+      setIsFetching(false);
+    }
   }, [manufacturer, model, nozzleSize]);
+
+  const debouncedFetchConfigs = useDebounce(fetchConfigs, 300);
+
+  useEffect(() => {
+    debouncedFetchConfigs();
+  }, [manufacturer, model, nozzleSize, debouncedFetchConfigs]);
 
   return { configs, isFetching, error };
 }

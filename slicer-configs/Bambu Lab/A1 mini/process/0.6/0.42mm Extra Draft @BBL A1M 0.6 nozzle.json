@@ -3,8 +3,7 @@
   "from": "User",
   "inherits": "0.42mm Extra Draft @BBL A1M 0.6 nozzle",
   "is_custom_defined": "0",
-  "name": "0.42mm Extra Draft @BBL A1M 0.6 nozzle - For Dummies",
   "print_settings_id": "0.42mm Extra Draft @BBL A1M 0.6 nozzle - For Dummies",
   "version": "1.9.0.23",
-  "friendlyName": "0.42mm Extra Draft"
+  "name": "0.42mm Extra Draft"
 }

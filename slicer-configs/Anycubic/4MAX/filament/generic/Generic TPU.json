@@ -1,0 +1,9 @@
+{
+  "type": "filament",
+  "filament_settings_id": ["Generic TPU - For Dummies"],
+  "from": "User",
+  "inherits": "My Generic TPU",
+  "is_custom_defined": "0",
+  "name": "Generic TPU",
+  "version": "1.9.0.23"
+}

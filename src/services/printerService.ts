@@ -1,9 +1,13 @@
 "use server";
 
 import {
+  BambulabFTPConnectionDetails,
+  KlipperConnectionDetails,
   PrinterWithConnectionDefinition,
   PrintSettings,
   PrintSettingsSchema,
+  isPrinterWithKlipperConnectionDetails,
+  isPrinterWithBambuLabFTPConnectionDetails,
 } from "@/types/printer";
 import { unlink, writeFile, readFile, mkdir } from "fs/promises";
 import { nanoid } from "nanoid";
@@ -15,6 +19,7 @@ import { execSync } from "child_process";
 import { LOG_LEVEL, SLICER_EXECUTABLE_PATH } from "@/utils/config";
 import { Console } from "@/utils/console";
 import { BackendResponse, sendError, sendSuccess } from "@/utils/backend";
+import { mergeDeep } from "@/utils/object";
 
 let _tempDirExistanceChecked = false;
 async function getTempFileName(
@@ -52,13 +57,9 @@ async function cleanupConfig(
 ) {
   const content = await readFile(configFileName, "utf-8");
   const parsedContent = JSON.parse(content);
-  delete parsedContent.friendlyName;
 
   const cleanedConfig = JSON.stringify(
-    {
-      ...parsedContent,
-      ...additionalSettings,
-    },
+    mergeDeep(parsedContent, additionalSettings),
     null,
     2
   );
@@ -97,13 +98,12 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
 
   const settingsPath = join(process.cwd(), "slicer-configs");
 
-  const fullMachineName = `${settings.printerManufacturer} ${settings.printerModel} ${settings.nozzleSize} nozzle`;
   const machineConfigurationFileName = join(
     settingsPath,
     settings.printerManufacturer,
     settings.printerModel,
     "machine",
-    `${fullMachineName}.json`
+    `${settings.nozzleSize} nozzle.json`
   );
 
   if (!existsSync(machineConfigurationFileName)) {
@@ -159,17 +159,21 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
     temporaryMachineConfigurationFileName
   );
 
-  Console.debug(
-    "Writing process configuration to temporary file",
-    temporaryProcessConfigurationFileName
-  );
+  const fullMachineName = `${settings.printerManufacturer} ${settings.printerModel} ${settings.nozzleSize} nozzle`;
+  Console.debug("Writing process configuration to temporary file", {
+    temporaryProcessConfigurationFileName,
+    fullMachineName,
+  });
   await cleanupConfig(
     processConfigurationFileName,
     temporaryProcessConfigurationFileName,
     {
       enable_support: settings.needsSupports ? "1" : "0",
       support_type: "tree(auto)",
-      compatible_printers: [fullMachineName],
+      compatible_printers: [
+        fullMachineName,
+        `MyKlipper ${settings.nozzleSize} nozzle`,
+      ],
     }
   );
 
@@ -214,6 +218,7 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
     Console.error("Error slicing STL", readableErrorMessage);
     throw new Error(readableErrorMessage.split(settingsPath).join(""));
   } finally {
+    /*
     if (existsSync(inputFileName)) {
       Console.debug("Deleting input file", inputFileName);
       await unlink(inputFileName).catch(() => {
@@ -256,16 +261,17 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
         );
       });
     }
+    */
   }
 }
 
 async function upload3mfToBambuLabFTP(
-  printer: PrinterWithConnectionDefinition,
+  printer: PrinterWithConnectionDefinition<BambulabFTPConnectionDetails>,
   fileName: string,
   destinationFileName: string
 ) {
   const client = new FTPClient();
-  // client.ftp.verbose = true;
+  client.ftp.verbose = LOG_LEVEL === "debug";
 
   await client.access({
     host: printer.connection.ipAddress,
@@ -282,19 +288,74 @@ async function upload3mfToBambuLabFTP(
   await client.uploadFrom(fileName, destinationFileName);
 }
 
+/**
+ * Uploads a 3MF file to a Klipper printer.
+ * @param printer - The printer to upload the file to.
+ * @param fileName - The path to the 3MF file to upload.
+ * @param destinationFileName - The path to the destination file on the printer.
+ *
+ * The file is uploaded using the moonraker REST API
+ * the endpoint is <ip-address>/<routePrefixIfSet>/server/files/upload
+ * the body is a multipart/form-data with the file to upload
+ * the file is uploaded as "file" and its filename is the destinationFileName
+ * the endpoint might be secured with an api key which needs to be set in the request header "X-Api-Key"
+ */
+async function upload3mfToKlipper(
+  printer: PrinterWithConnectionDefinition<KlipperConnectionDetails>,
+  fileName: string,
+  destinationFileName: string
+) {
+  Console.debug("Uploading 3MF to Klipper");
+
+  let url = `http://${printer.connection.host}:${printer.connection.port}`;
+  if (printer.connection.routePrefix) {
+    url = `${url}/${printer.connection.routePrefix}`;
+  }
+
+  url = `${url}/server/files/upload`;
+
+  Console.debug("using url", url);
+
+  const formData = new FormData();
+  formData.append(
+    "file",
+    new Blob([await readFile(fileName)]),
+    destinationFileName
+  );
+
+  Console.debug("using formData", formData);
+  const response = await fetch(url, {
+    method: "POST",
+    body: formData,
+    headers: {
+      "X-Api-Key": printer.connection.apiKey ?? "",
+    },
+  });
+
+  if (!response.ok) {
+    Console.error("Failed to upload 3MF to Klipper", response);
+    throw new Error(`Failed to upload 3MF to Klipper: ${response.statusText}`);
+  }
+
+  Console.debug("Uploaded 3MF to Klipper", response.statusText);
+}
+
 async function upload3mfToPrinter(
   printer: PrinterWithConnectionDefinition,
   fileName: string,
   destinationFileName: string
 ): Promise<void> {
-  switch (printer.connection.type) {
-    case "BambuLab FTP":
-      return upload3mfToBambuLabFTP(printer, fileName, destinationFileName);
-    default:
-      throw new Error(
-        `Unsupported printer connection type: ${printer.connection.type}`
-      );
+  if (isPrinterWithBambuLabFTPConnectionDetails(printer)) {
+    return upload3mfToBambuLabFTP(printer, fileName, destinationFileName);
   }
+
+  if (isPrinterWithKlipperConnectionDetails(printer)) {
+    return upload3mfToKlipper(printer, fileName, destinationFileName);
+  }
+
+  throw new Error(
+    `Unsupported printer connection type: ${printer.connection.type}`
+  );
 }
 
 export async function handleFileUpload(
