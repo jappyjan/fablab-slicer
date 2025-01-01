@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { usePrinters } from "@/hooks/printer-configs";
-import { PrinterWithModelDefinition } from "@/services/printerConfigService";
+import { PrinterWithModelDefinition } from "@/types/printer";
 
 interface PrinterSelectorProps {
   selectedPrinter: PrinterWithModelDefinition | null;

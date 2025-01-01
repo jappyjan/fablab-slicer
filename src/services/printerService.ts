@@ -1,18 +1,20 @@
 "use server";
 
-import { PrintSettings, PrintSettingsSchema } from "@/types/printer";
+import {
+  PrinterWithConnectionDefinition,
+  PrintSettings,
+  PrintSettingsSchema,
+} from "@/types/printer";
 import { unlink, writeFile, readFile, mkdir } from "fs/promises";
 import { nanoid } from "nanoid";
 import { existsSync } from "fs";
 import { join } from "path";
 import { Client as FTPClient } from "basic-ftp";
-import {
-  getPrinterDefinition_serverOnly,
-  PrinterWithConnectionDefinition,
-} from "./printerConfigService";
+import { getPrinterDefinition_serverOnly } from "./printerConfigService";
 import { execSync } from "child_process";
 import { LOG_LEVEL, SLICER_EXECUTABLE_PATH } from "@/utils/config";
 import { Console } from "@/utils/console";
+import { BackendResponse, sendError, sendSuccess } from "@/utils/backend";
 
 let _tempDirExistanceChecked = false;
 async function getTempFileName(
@@ -295,14 +297,16 @@ async function upload3mfToPrinter(
   }
 }
 
-export async function handleFileUpload(formData: FormData) {
+export async function handleFileUpload(
+  formData: FormData
+): Promise<BackendResponse<{ fileName: string }>> {
   const file = formData.get("file") as File;
   if (!file) {
-    throw new Error("No file provided");
+    return sendError("No file provided");
   }
 
   if (!(file instanceof File)) {
-    throw new Error("Invalid file");
+    return sendError("Invalid file");
   }
 
   const settings = PrintSettingsSchema.parse({
@@ -328,8 +332,7 @@ export async function handleFileUpload(formData: FormData) {
     );
 
     if (!printer) {
-      Console.error("Printer not found", settings.printerName);
-      throw new Error("Printer not found");
+      return sendError("Printer not found");
     }
 
     slicedFileName = await sliceSTL(file, settings);
@@ -347,10 +350,11 @@ export async function handleFileUpload(formData: FormData) {
     await upload3mfToPrinter(printer, slicedFileName, destinationFileName);
     Console.debug("Uploaded 3MF to printer");
 
-    return {
-      status: "success",
+    return sendSuccess({
       fileName: destinationFileName,
-    };
+    });
+  } catch (error) {
+    return sendError(error as string);
   } finally {
     if (slicedFileName && existsSync(slicedFileName)) {
       Console.debug("Deleting sliced file", slicedFileName);

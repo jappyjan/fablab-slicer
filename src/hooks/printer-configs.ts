@@ -1,16 +1,17 @@
-import {
-  getPrinterConfigurations,
-  PrinterConfigurations,
-  PrinterWithModelDefinition,
-} from "@/services/printerConfigService";
+import { getPrinterConfigurations } from "@/services/printerConfigService";
 import { useEffect, useState } from "react";
 import { getAllPrinterDefinitions } from "@/services/printerConfigService";
+import {
+  PrinterConfigurations,
+  PrinterWithModelDefinition,
+} from "@/types/printer";
 
 const cache = new Map<string, any>();
 
 export function usePrinters() {
   const [printers, setPrinters] = useState<PrinterWithModelDefinition[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (cache.has("printers")) {
@@ -20,16 +21,26 @@ export function usePrinters() {
 
     setIsFetching(true);
     getAllPrinterDefinitions()
-      .then((printers) => {
-        setPrinters(printers);
-        cache.set("printers", printers);
+      .then((response) => {
+        if (response.status !== "success") {
+          let errorMsg = "Unknown error";
+          if (Array.isArray(response.error)) {
+            errorMsg = response.error.join("\n");
+          } else {
+            errorMsg = response.error.toString();
+          }
+          setError(errorMsg);
+          return;
+        }
+        setPrinters(response.data);
+        cache.set("printers", response.data);
       })
       .finally(() => {
         setIsFetching(false);
       });
   }, []);
 
-  return { printers, isFetching };
+  return { printers, isFetching, error };
 }
 
 export function usePrinterConfigs(
@@ -39,6 +50,7 @@ export function usePrinterConfigs(
 ) {
   const [isFetching, setIsFetching] = useState(true);
   const [configs, setConfigs] = useState<PrinterConfigurations | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!manufacturer || !model || !nozzleSize) {
@@ -55,14 +67,24 @@ export function usePrinterConfigs(
 
     setIsFetching(true);
     getPrinterConfigurations(manufacturer, model, nozzleSize)
-      .then((configs) => {
-        setConfigs(configs);
-        cache.set(cacheKey, configs);
+      .then((response) => {
+        if (response.status !== "success") {
+          let errorMsg = "Unknown error";
+          if (Array.isArray(response.error)) {
+            errorMsg = response.error.join("\n");
+          } else {
+            errorMsg = response.error.toString();
+          }
+          setError(errorMsg);
+          return;
+        }
+        setConfigs(response.data);
+        cache.set(cacheKey, response.data);
       })
       .finally(() => {
         setIsFetching(false);
       });
   }, [manufacturer, model, nozzleSize]);
 
-  return { configs, isFetching };
+  return { configs, isFetching, error };
 }

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { usePrinterConfigs } from "@/hooks/printer-configs";
 import { ProgressIndicator } from "./ProgressIndicator";
-import { PrinterWithModelDefinition } from "@/services/printerConfigService";
+import { PrinterWithModelDefinition } from "@/types/printer";
 
 interface PrintSettingsProps {
   selectedPrinter: PrinterWithModelDefinition;
@@ -30,7 +30,11 @@ export function PrintSettings({
   onNeedsSupportsChange,
   onBuildPlateTypeChange,
 }: PrintSettingsProps) {
-  const { configs, isFetching: isFetchingConfigs } = usePrinterConfigs(
+  const {
+    configs,
+    isFetching: isFetchingConfigs,
+    error,
+  } = usePrinterConfigs(
     selectedPrinter.manufacturer,
     selectedPrinter.model,
     nozzleSize
@@ -59,6 +63,7 @@ export function PrintSettings({
         {isFetchingConfigs && (
           <ProgressIndicator infinite label="Fetching printer configs..." />
         )}
+        {error && <div className="text-red-500">{error}</div>}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Nozzle Size

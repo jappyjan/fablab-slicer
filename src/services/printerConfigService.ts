@@ -1,45 +1,23 @@
 "use server";
 
+import {
+  ConfigurationFile,
+  PrinterConfigurations,
+  PrinterModelDefinition,
+  PrinterWithModelDefinition,
+} from "@/types/printer";
+import {
+  BackendErrorResponse,
+  BackendResponse,
+  BackendSuccessResponse,
+  ErrorType,
+  sendError,
+  sendSuccess,
+} from "@/utils/backend";
 import { Console } from "@/utils/console";
 import { existsSync } from "fs";
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-
-interface BambulabFTPConnectionDetails {
-  type: "BambuLab FTP";
-  ipAddress: string;
-  accessCode: string;
-}
-
-export interface PrinterDefinition {
-  name: string;
-  availableNozzleSizes: number[];
-  defaultBuildPlate: string;
-}
-
-export interface PrinterWithConnectionDefinition extends PrinterDefinition {
-  connection: BambulabFTPConnectionDetails;
-}
-
-export interface PrinterModelDefinition {
-  manufacturer: string;
-  model: string;
-  imagePath: string;
-  printers: PrinterWithConnectionDefinition[];
-  availableBuildPlates: string[];
-}
-
-export type PrinterWithModelDefinition = Omit<
-  PrinterModelDefinition,
-  "printers"
-> &
-  PrinterDefinition;
-
-export type PrinterWithConnectionAndModelDefinition = Omit<
-  PrinterModelDefinition,
-  "printers"
-> &
-  PrinterWithConnectionDefinition;
 
 export async function getPrinterDefinition_serverOnly(
   manufacturer: string,
@@ -112,25 +90,15 @@ export async function getAllPrinterDefinitions_serverOnly(): Promise<
 }
 
 export async function getAllPrinterDefinitions(): Promise<
-  PrinterWithModelDefinition[]
+  BackendResponse<PrinterWithModelDefinition[]>
 > {
   const definitions = await getAllPrinterDefinitions_serverOnly();
-  return definitions.map((definition) => ({
-    ...definition,
-    connection: undefined,
-  }));
-}
-
-interface ConfigurationFile {
-  name: string;
-  path: string;
-  content: any;
-}
-
-export interface PrinterConfigurations {
-  filament: ConfigurationFile[];
-  machine: ConfigurationFile[];
-  process: ConfigurationFile[];
+  return sendSuccess(
+    definitions.map((definition) => ({
+      ...definition,
+      connection: undefined,
+    }))
+  );
 }
 
 async function getFilamentConfigurationsForNozzleSizeAndPrinter(
@@ -221,7 +189,7 @@ export async function getPrinterConfigurations(
   manufacturer: string,
   model: string,
   nozzleSize: number
-): Promise<PrinterConfigurations> {
+): Promise<BackendResponse<PrinterConfigurations>> {
   const filamentConfigFiles =
     await getFilamentConfigurationsForNozzleSizeAndPrinter(
       "filament",
@@ -246,9 +214,9 @@ export async function getPrinterConfigurations(
       nozzleSize
     );
 
-  return {
+  return sendSuccess({
     filament: filamentConfigFiles,
     machine: machineConfigFiles,
     process: processConfigFiles,
-  };
+  });
 }

@@ -12,10 +12,9 @@ import { ProgressIndicator } from "@/components/ProgressIndicator";
 import { SuccessModal } from "@/components/SuccessModal";
 import { CollapsiblePanel } from "@/components/CollapsiblePanel";
 import { handleFileUpload } from "../services/printerService";
-import type { PrintSettings as PrintSettingsType } from "@/types/printer";
 import { ErrorDisplay } from "./ErrorDisplay";
 import { PrinterSelector } from "./PrinterSelector";
-import { PrinterWithModelDefinition } from "@/services/printerConfigService";
+import { PrinterWithModelDefinition } from "@/types/printer";
 
 type StepName =
   | "choose_file"
@@ -99,7 +98,20 @@ export function PrintWorkflow() {
 
       increaseProgress();
 
-      const { fileName } = await handleFileUpload(formData);
+      const response = await handleFileUpload(formData);
+      if (response.status !== "success") {
+        let errorMsg = "Unknown error";
+        if (Array.isArray(response.error)) {
+          errorMsg = response.error.join("\n");
+        } else {
+          errorMsg = response.error.toString();
+        }
+        setErrorMessage(errorMsg);
+        return;
+      }
+
+      const { fileName } = response.data;
+
       setSlicedFileName(fileName);
 
       clearTimeout(fakeProgressInterval!);
