@@ -157,14 +157,16 @@ export function PrintWorkflow() {
       <div className="mx-auto max-w-3xl px-4">
         <div className="mb-8 flex items-center gap-3">
           <PrinterIcon className="h-8 w-8 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-900">
-            3D Print Workflow
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Scheibierer 4000</h1>
         </div>
 
         <div className="space-y-6">
           <CollapsiblePanel
-            title={selectedFile ? selectedFile.name : "Upload STL File"}
+            title={
+              selectedFile
+                ? selectedFile.name
+                : "STL Datei hochladen | Upload STL File"
+            }
             icon={UploadIcon}
             isOpen={activeStep === "choose_file"}
             onToggle={() => setActiveStep("choose_file")}
@@ -172,14 +174,18 @@ export function PrintWorkflow() {
             <FileUpload onFileSelect={handleFileSelect} />
             {selectedFile && (
               <p className="mt-2 text-sm text-gray-600">
-                Selected file: {selectedFile.name}
+                Gewählte Date | Selected file: {selectedFile.name}
               </p>
             )}
           </CollapsiblePanel>
 
           {selectedFile && (
             <CollapsiblePanel
-              title={selectedPrinter ? selectedPrinter.name : "Select Printer"}
+              title={
+                selectedPrinter
+                  ? selectedPrinter.name
+                  : "Drucker auswählen | Select Printer"
+              }
               icon={PrinterIcon}
               isOpen={activeStep === "choose_printer"}
               onToggle={() => setActiveStep("choose_printer")}
@@ -193,7 +199,7 @@ export function PrintWorkflow() {
 
           {selectedPrinter !== null && (
             <CollapsiblePanel
-              title="Print Settings"
+              title="Druck Einstellungen | Print Settings"
               icon={SettingsIcon}
               isOpen={activeStep === "settings"}
               onToggle={() => setActiveStep("settings")}
@@ -222,7 +228,7 @@ export function PrintWorkflow() {
                 type="submit"
                 className="mt-6 w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
               >
-                Process and Upload
+                Hochladen und Verarbeiten | Upload and Process
               </button>
             </CollapsiblePanel>
           )}

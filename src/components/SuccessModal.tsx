@@ -28,11 +28,15 @@ export function SuccessModal({ isOpen, onClose, fileName }: SuccessModalProps) {
 
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Success!</h3>
           <p className="text-center text-gray-600">
+            Ihre Datei wurde erfolgreich verarbeitet und hochgeladen. Sie können
+            jetzt den Druck von der Druckeroberfläche starten.
+          </p>
+          <p className="text-center text-gray-600">
             Your file has been successfully processed and uploaded. You can now
             start the print from your printer's interface.
-            <br />
-            <br />
-            <b>File Name on Printer:</b>
+          </p>
+          <p className="text-center text-gray-600 mt-4">
+            <b>Dateiname auf Drucker | File Name on Printer:</b>
             <br />
             {fileName}
           </p>

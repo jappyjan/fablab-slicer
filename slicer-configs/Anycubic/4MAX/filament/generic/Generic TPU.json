@@ -4,6 +4,6 @@
   "from": "User",
   "inherits": "My Generic TPU",
   "is_custom_defined": "0",
-  "name": "Generic TPU",
+  "name": "TPU",
   "version": "1.9.0.23"
 }

@@ -68,30 +68,38 @@ export function PrintSettings({
     <div className="space-y-4">
       <div className="grid gap-4">
         {isFetchingConfigs && (
-          <ProgressIndicator infinite label="Fetching printer configs..." />
+          <ProgressIndicator
+            infinite
+            label="Lade Drucker Konfigurationen | Fetching printer configs..."
+          />
         )}
         {error && <div className="text-red-500">{error}</div>}
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Nozzle Size
+            Düsengröße | Nozzle Size
           </label>
-          <select
-            value={nozzleSize ?? ""}
-            onChange={(e) => onNozzleSizeChange(parseFloat(e.target.value))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
-            {selectedPrinter.availableNozzleSizes.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
+          {selectedPrinter.availableNozzleSizes.length > 1 ? (
+            <select
+              value={nozzleSize ?? ""}
+              onChange={(e) => onNozzleSizeChange(parseFloat(e.target.value))}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            >
+              {selectedPrinter.availableNozzleSizes.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <span>{nozzleSize ?? ""}</span>
+          )}
         </div>
 
         {(selectedPrinter.availableBuildPlates?.length ?? 0) > 0 && (
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Build Plate
+              Druckplatte | Build Plate
             </label>
             <select
               value={buildPlateType ?? ""}
@@ -100,7 +108,7 @@ export function PrintSettings({
             >
               {!buildPlateType && (
                 <option disabled value="">
-                  Select Build Plate
+                  Druckplatte auswählen | Select Build Plate
                 </option>
               )}
               {selectedPrinter.availableBuildPlates.map((buildPlate) => (
@@ -114,7 +122,7 @@ export function PrintSettings({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Print Quality
+            Druckqualität | Print Quality
           </label>
           <select
             value={processConfigFile ?? ""}
@@ -123,7 +131,7 @@ export function PrintSettings({
           >
             {!processConfigFile && (
               <option disabled value="">
-                Select Quality
+                Qualität auswählen | Select Quality
               </option>
             )}
             {configs?.process.map((configFile) => (
@@ -136,7 +144,7 @@ export function PrintSettings({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Filament Type
+            Filamenttyp | Filament Type
           </label>
           <select
             value={filamentConfigFile ?? ""}
@@ -145,7 +153,7 @@ export function PrintSettings({
           >
             {!filamentConfigFile && (
               <option disabled value="">
-                Select Filament
+                Filament auswählen | Select Filament
               </option>
             )}
             {configs?.filament.map((configFile) => (
@@ -165,7 +173,7 @@ export function PrintSettings({
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm font-medium text-gray-700">
-              Generate Supports
+              Unterstützungen generieren | Generate Supports
             </span>
           </label>
         </div>

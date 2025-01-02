@@ -4,6 +4,6 @@
   "from": "User",
   "inherits": "My Generic PETG",
   "is_custom_defined": "0",
-  "name": "Generic PETG",
+  "name": "PETG",
   "version": "1.9.0.23"
 }

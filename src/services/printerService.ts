@@ -218,7 +218,6 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
     Console.error("Error slicing STL", readableErrorMessage);
     throw new Error(readableErrorMessage.split(settingsPath).join(""));
   } finally {
-    /*
     if (existsSync(inputFileName)) {
       Console.debug("Deleting input file", inputFileName);
       await unlink(inputFileName).catch(() => {
@@ -261,7 +260,6 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
         );
       });
     }
-    */
   }
 }
 

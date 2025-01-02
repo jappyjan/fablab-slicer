@@ -46,6 +46,12 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
       className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer"
     >
       <Upload className="mx-auto h-12 w-12 text-gray-400" />
+
+      <p className="mt-2 text-gray-600">
+        Ziehen Sie Ihre .STL Datei hierhin, oder klicken Sie irgendwohin, um sie
+        hochzuladen
+      </p>
+
       <p className="mt-2 text-gray-600">
         Drag and drop your .STL file here, or click anywhere to upload
       </p>

@@ -26,7 +26,9 @@ export function PrinterSelector({
   );
 
   if (isFetching) {
-    return <ProgressIndicator infinite label="Fetching printers..." />;
+    return (
+      <ProgressIndicator infinite label="Lade Drucker | Fetching printers..." />
+    );
   }
 
   return (
