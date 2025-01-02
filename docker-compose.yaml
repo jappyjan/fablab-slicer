@@ -11,4 +11,14 @@ services:
     #ports:
     #  - "8080:8080"
     volumes:
-      - ./slicer-configs:/app/slicer-configs
+      - slicer-configs:/app/slicer-configs
+
+volumes:
+  slicer-configs:
+    external: true
+    name: slicer-configs
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./slicer-configs
