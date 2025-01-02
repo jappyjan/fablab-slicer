@@ -15,7 +15,6 @@ services:
 
 volumes:
   slicer-configs:
-    external: true
     name: slicer-configs
     driver: local
     driver_opts:
