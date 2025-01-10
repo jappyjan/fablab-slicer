@@ -9,9 +9,16 @@ import {
   isPrinterWithKlipperConnectionDetails,
   isPrinterWithBambuLabFTPConnectionDetails,
 } from "@/types/printer";
-import { unlink, writeFile, readFile, mkdir } from "fs/promises";
+import {
+  unlink,
+  writeFile,
+  readFile,
+  mkdir,
+  rmdir,
+  readdir,
+} from "fs/promises";
 import { nanoid } from "nanoid";
-import { existsSync } from "fs";
+import { existsSync, statSync } from "fs";
 import { join } from "path";
 import { Client as FTPClient } from "basic-ftp";
 import { getPrinterDefinition_serverOnly } from "./printerConfigService";
@@ -69,9 +76,14 @@ async function cleanupConfig(
 }
 
 // https://github.com/bambulab/BambuStudio/wiki/Command-Line-Usage
-async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
+async function sliceSTL(
+  file: File,
+  settings: PrintSettings,
+  printer: PrinterWithConnectionDefinition
+): Promise<string> {
   const inputFileName = `${await getTempFileName("input")}.stl`;
   const outputFileName = `${await getTempFileName("output")}.3mf`;
+  const outputDir = `${await getTempFileName("outputSlicedata")}`;
   const temporaryMachineConfigurationFileName = `${await getTempFileName(
     "machineConfiguration"
   )}.json`;
@@ -186,6 +198,11 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
     temporaryFilamentConfigurationFileName
   );
 
+  let exportCommand = `--export-3mf "${outputFileName}"`;
+  if (printer.connection.type === "Klipper") {
+    exportCommand = `--outputdir "${outputDir}"`;
+  }
+
   const command = `"${SLICER_EXECUTABLE_PATH}"
 --orient 1
 --arrange 1
@@ -197,7 +214,7 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
 --debug 4
 --ensure-on-bed
 --min-save
---export-3mf "${outputFileName}"
+${exportCommand}
 "${inputFileName}"`;
 
   const formattedCommand = command.split("\n").join(" ");
@@ -209,7 +226,7 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
     });
     Console.debug("Slicer finished");
 
-    return outputFileName;
+    return printer.connection.type === "Klipper" ? outputDir : outputFileName;
   } catch (error) {
     Console.debug("Slicer failed");
     const readableErrorMessage = (error as Error).message.substring(
@@ -266,7 +283,7 @@ async function sliceSTL(file: File, settings: PrintSettings): Promise<string> {
 async function upload3mfToBambuLabFTP(
   printer: PrinterWithConnectionDefinition<BambulabFTPConnectionDetails>,
   fileName: string,
-  destinationFileName: string
+  originalFileName: string
 ) {
   const client = new FTPClient();
   client.ftp.verbose = LOG_LEVEL === "debug";
@@ -283,25 +300,52 @@ async function upload3mfToBambuLabFTP(
   });
 
   Console.debug("Connected to printer");
+
+  const fileNameWithoutSuffix = originalFileName.substring(
+    0,
+    originalFileName.lastIndexOf(".")
+  );
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const monthNum = now.getMonth() + 1;
+  const month = monthNum < 10 ? `0${monthNum}` : monthNum;
+
+  const tempFileName = await getTempFileName(fileNameWithoutSuffix, {
+    includeTimestamp: false,
+    includeTmpDir: false,
+  });
+  const destinationFileName = `${year}-${month}/${tempFileName}.3mf`;
   await client.uploadFrom(fileName, destinationFileName);
+
+  return destinationFileName;
 }
 
-/**
- * Uploads a 3MF file to a Klipper printer.
- * @param printer - The printer to upload the file to.
- * @param fileName - The path to the 3MF file to upload.
- * @param destinationFileName - The path to the destination file on the printer.
- *
- * The file is uploaded using the moonraker REST API
- * the endpoint is <ip-address>/<routePrefixIfSet>/server/files/upload
- * the body is a multipart/form-data with the file to upload
- * the file is uploaded as "file" and its filename is the destinationFileName
- * the endpoint might be secured with an api key which needs to be set in the request header "X-Api-Key"
- */
-async function upload3mfToKlipper(
+async function uploadGCodesToKlipper(
   printer: PrinterWithConnectionDefinition<KlipperConnectionDetails>,
-  fileName: string,
-  destinationFileName: string
+  directory: string,
+  originalFileName: string
+) {
+  const plates = await readdir(directory);
+
+  const destinationFileNames: string[] = [];
+  for (const plate of plates) {
+    const plateDirectory = join(directory, plate);
+    const destinationFileName = await uploadGCodeToKlipper(
+      printer,
+      plateDirectory,
+      originalFileName
+    );
+    destinationFileNames.push(destinationFileName);
+  }
+
+  return destinationFileNames;
+}
+
+async function uploadGCodeToKlipper(
+  printer: PrinterWithConnectionDefinition<KlipperConnectionDetails>,
+  gcodeFileNameWithDir: string,
+  originalSTLFileName: string
 ) {
   Console.debug("Uploading 3MF to Klipper");
 
@@ -314,10 +358,31 @@ async function upload3mfToKlipper(
 
   Console.debug("using url", url);
 
+  const originalFileNameWithoutDirAndSuffix = originalSTLFileName.substring(
+    0,
+    originalSTLFileName.lastIndexOf(".")
+  );
+
+  const nameOfPlateWithoutDir = gcodeFileNameWithDir.substring(
+    gcodeFileNameWithDir.lastIndexOf("/") + 1
+  );
+  const nameOfPlateWithoutDirParts = nameOfPlateWithoutDir.split(".");
+  nameOfPlateWithoutDirParts.pop();
+  const nameOfPlateWithoutDirAndSuffix = nameOfPlateWithoutDirParts.join(".");
+
+  const destinationFileName =
+    (await getTempFileName(
+      `${originalFileNameWithoutDirAndSuffix}_${nameOfPlateWithoutDirAndSuffix}`,
+      {
+        includeTimestamp: false,
+        includeTmpDir: false,
+      }
+    )) + ".gcode";
+
   const formData = new FormData();
   formData.append(
     "file",
-    new Blob([await readFile(fileName)]),
+    new Blob([await readFile(gcodeFileNameWithDir)]),
     destinationFileName
   );
 
@@ -336,19 +401,25 @@ async function upload3mfToKlipper(
   }
 
   Console.debug("Uploaded 3MF to Klipper", response.statusText);
+  return destinationFileName;
 }
 
-async function upload3mfToPrinter(
+async function uploadToPrinter(
   printer: PrinterWithConnectionDefinition,
   fileName: string,
-  destinationFileName: string
-): Promise<void> {
+  originalFileName: string
+): Promise<string[]> {
   if (isPrinterWithBambuLabFTPConnectionDetails(printer)) {
-    return upload3mfToBambuLabFTP(printer, fileName, destinationFileName);
+    const destinationFileName = await upload3mfToBambuLabFTP(
+      printer,
+      fileName,
+      originalFileName
+    );
+    return [destinationFileName];
   }
 
   if (isPrinterWithKlipperConnectionDetails(printer)) {
-    return upload3mfToKlipper(printer, fileName, destinationFileName);
+    return uploadGCodesToKlipper(printer, fileName, originalFileName);
   }
 
   throw new Error(
@@ -358,7 +429,7 @@ async function upload3mfToPrinter(
 
 export async function handleFileUpload(
   formData: FormData
-): Promise<BackendResponse<{ fileName: string }>> {
+): Promise<BackendResponse<{ fileNames: string[] }>> {
   const file = formData.get("file") as File;
   if (!file) {
     return sendError("No file provided");
@@ -394,30 +465,30 @@ export async function handleFileUpload(
       return sendError("Printer not found");
     }
 
-    slicedFileName = await sliceSTL(file, settings);
+    slicedFileName = await sliceSTL(file, settings, printer);
     Console.debug("Sliced STL", slicedFileName);
 
-    const fileNameWithoutSuffix = file.name.substring(
-      0,
-      file.name.lastIndexOf(".")
-    );
-    const destinationFileName =
-      (await getTempFileName(fileNameWithoutSuffix, {
-        includeTimestamp: false,
-        includeTmpDir: false,
-      })) + ".3mf";
-    await upload3mfToPrinter(printer, slicedFileName, destinationFileName);
+    const fileNames = await uploadToPrinter(printer, slicedFileName, file.name);
     Console.debug("Uploaded 3MF to printer");
 
     return sendSuccess({
-      fileName: destinationFileName,
+      fileNames,
     });
   } catch (error) {
     return sendError(error as string);
   } finally {
     if (slicedFileName && existsSync(slicedFileName)) {
       Console.debug("Deleting sliced file", slicedFileName);
-      await unlink(slicedFileName);
+      // if is dir use rmdir, else use unlink
+      if (statSync(slicedFileName).isDirectory()) {
+        Console.debug("Deleting sliced directory", slicedFileName);
+        await rmdir(slicedFileName, {
+          recursive: true,
+        });
+      } else {
+        Console.debug("Deleting sliced file", slicedFileName);
+        await unlink(slicedFileName);
+      }
     }
   }
 }

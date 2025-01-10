@@ -1,0 +1,8 @@
+{
+    "from": "User",
+    "inherits": "0.18mm Standard @Ultimaker S5 0.4 nozzle(UMS5_Drill_merged.3mf)",
+    "is_custom_defined": "0",
+    "name": "0.18mm Standard @Ultimaker S5 0.4 nozzle(UMS5_Drill_merged.3mf) - jappy",
+    "print_settings_id": "0.18mm Standard @Ultimaker S5 0.4 nozzle(UMS5_Drill_merged.3mf) - jappy",
+    "version": "0.0.0.0"
+}

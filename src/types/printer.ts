@@ -33,6 +33,12 @@ export interface PrinterDefinition {
   name: string;
   availableNozzleSizes: number[];
   defaultBuildPlate: string;
+  popups?: {
+    onSelect?: {
+      title: { english: string; german: string };
+      description: { english: string; german: string };
+    };
+  };
 }
 
 export function isPrinterWithBambuLabFTPConnectionDetails(

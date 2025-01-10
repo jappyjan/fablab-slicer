@@ -1,24 +1,36 @@
 {
-  "availableBuildPlates": [
+  "availableBuildPlates": ["Textured PEI Plate"],
+  "notAvailableBuildPlates": [
     "Engineering Plate",
-    "Textured PEI Plate",
     "Textured Cool Plate",
     "High Temp Plate"
   ],
   "printers": [
     {
-      "name": "Atom",
-      "availableNozzleSizes": [0.2, 0.4, 0.6],
+      "name": "mit AMS",
+      "availableNozzleSizes": [0.4],
       "defaultBuildPlate": "Textured PEI Plate",
       "connection": {
         "type": "BambuLab FTP",
         "ipAddress": "192.168.178.150",
         "accessCode": "888888"
+      },
+      "popups": {
+        "onSelect": {
+          "title": {
+            "german": "Brauchst du wirklich das AMS?",
+            "english": "Do you really need the AMS?"
+          },
+          "description": {
+            "german": "Das AMS (Farbwechsler/Filamentwechsler) brauchst du nur wenn du mit mehreren Farben drucken willst. Wenn du dies nicht brauchst, wäre es cool wenn du den Drucker ohne AMS nutzt und den mit AMS für andere Mitglieder frei lässt.",
+            "english": "The AMS (Color changer/Filament changer) is only needed if you want to print with multiple colors. If you don't need it, it would be cool if you use the printer without AMS and let the AMS free for other members."
+          }
+        }
       }
     },
     {
-      "name": "Anderer A1 Mini",
-      "availableNozzleSizes": [0.4, 0.8],
+      "name": "ohne AMS",
+      "availableNozzleSizes": [0.4],
       "defaultBuildPlate": "Textured PEI Plate",
       "connection": {
         "type": "BambuLab FTP",

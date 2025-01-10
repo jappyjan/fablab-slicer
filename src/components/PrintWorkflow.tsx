@@ -43,7 +43,7 @@ export function PrintWorkflow() {
   const [isHugeFile, setIsHugeFile] = useState(false);
   const [selectedPrinter, setSelectedPrinter] =
     useState<PrinterWithModelDefinition | null>(null);
-  const [slicedFileName, setSlicedFileName] = useState<string | null>(null);
+  const [slicedFileNames, setSlicedFileNames] = useState<string[] | null>(null);
 
   const handleFileSelect = useCallback((file: File) => {
     setSelectedFile(file);
@@ -61,7 +61,7 @@ export function PrintWorkflow() {
   const startPrint = useCallback(async () => {
     setActiveStep("slice_file");
 
-    setSlicedFileName(null);
+    setSlicedFileNames(null);
 
     let fakeProgressInterval: NodeJS.Timeout | null = null;
 
@@ -105,9 +105,9 @@ export function PrintWorkflow() {
       }
 
       console.log(response);
-      const { fileName } = response.data;
+      const { fileNames } = response.data;
 
-      setSlicedFileName(fileName);
+      setSlicedFileNames(fileNames);
 
       clearTimeout(fakeProgressInterval!);
       setSlicingProgress(100);
@@ -256,7 +256,7 @@ export function PrintWorkflow() {
       <SuccessModal
         isOpen={activeStep === "success"}
         onClose={resetWorkflow}
-        fileName={slicedFileName ?? ""}
+        fileNames={slicedFileNames ?? []}
       />
     </form>
   );

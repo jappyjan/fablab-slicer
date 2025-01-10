@@ -4,10 +4,14 @@ import { CheckCircle, X } from "lucide-react";
 interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
-  fileName: string;
+  fileNames: string[];
 }
 
-export function SuccessModal({ isOpen, onClose, fileName }: SuccessModalProps) {
+export function SuccessModal({
+  isOpen,
+  onClose,
+  fileNames,
+}: SuccessModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -36,9 +40,13 @@ export function SuccessModal({ isOpen, onClose, fileName }: SuccessModalProps) {
             start the print from your printer's interface.
           </p>
           <p className="text-center text-gray-600 mt-4">
-            <b>Dateiname auf Drucker | File Name on Printer:</b>
+            <b>Dateiname(n) auf Drucker | File Name(s) on Printer:</b>
             <br />
-            {fileName}
+            <ul>
+              {fileNames.map((fileName) => (
+                <li key={fileName}>{fileName}</li>
+              ))}
+            </ul>
           </p>
         </div>
       </div>

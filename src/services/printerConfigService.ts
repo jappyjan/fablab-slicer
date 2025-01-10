@@ -32,7 +32,7 @@ export async function getPrinterDefinition_serverOnly(
   );
 
   if (!existsSync(printerConfigPath)) {
-    Console.error("Printer config not found", printerConfigPath);
+    Console.error(`Printer config not found at "${printerConfigPath}"`);
     throw new Error("Printer config not found");
   }
 
@@ -84,6 +84,7 @@ export async function getAllPrinterDefinitions_serverOnly(): Promise<
         availableBuildPlates: model.availableBuildPlates,
         defaultBuildPlate: printer.defaultBuildPlate,
         connection: printer.connection,
+        popups: printer.popups,
       }));
     })
     .flat();
