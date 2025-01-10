@@ -1,14 +1,16 @@
 version: "3.8"
-
 services:
-  fablab-slicer:
-    # runs on port 8080 - needs to be exposed to the outside world
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - PORT=8080
-    #ports:
-    #  - "8080:8080"
+  app:
+    image: ghcr.io/jappyjan/fablab-slicer:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
     volumes:
-      - /data/fablab-slice-configs:/app/slicer-configs
+      - ./slicer-configs:/app/slicer-configs:ro
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
