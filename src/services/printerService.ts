@@ -322,9 +322,11 @@ async function upload3mfToBambuLabFTP(
   const destinationFileNameWithoutFolders = destinationFileNameParts.pop()!;
 
   for (const folder of folders) {
+    Console.debug("Changing directory to", folder);
     await client.cd(folder);
   }
 
+  Console.debug("Uploading file to", destinationFileNameWithoutFolders);
   await client.uploadFrom(fileName, destinationFileNameWithoutFolders);
 
   return destinationFileName;
