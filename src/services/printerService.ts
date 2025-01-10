@@ -323,7 +323,7 @@ async function upload3mfToBambuLabFTP(
 
   for (const folder of folders) {
     Console.debug("Changing directory to", folder);
-    await client.cd(folder);
+    await client.ensureDir(folder);
   }
 
   Console.debug("Uploading file to", destinationFileNameWithoutFolders);
