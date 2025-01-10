@@ -316,7 +316,16 @@ async function upload3mfToBambuLabFTP(
     includeTmpDir: false,
   });
   const destinationFileName = `${year}-${month}/${tempFileName}.3mf`;
-  await client.uploadFrom(fileName, destinationFileName);
+  const destinationFileNameParts = destinationFileName.split("/");
+
+  const folders = destinationFileNameParts.slice(0, -1);
+  const destinationFileNameWithoutFolders = destinationFileNameParts.pop()!;
+
+  for (const folder of folders) {
+    await client.cd(folder);
+  }
+
+  await client.uploadFrom(fileName, destinationFileNameWithoutFolders);
 
   return destinationFileName;
 }
@@ -370,14 +379,20 @@ async function uploadGCodeToKlipper(
   nameOfPlateWithoutDirParts.pop();
   const nameOfPlateWithoutDirAndSuffix = nameOfPlateWithoutDirParts.join(".");
 
-  const destinationFileName =
-    (await getTempFileName(
-      `${originalFileNameWithoutDirAndSuffix}_${nameOfPlateWithoutDirAndSuffix}`,
-      {
-        includeTimestamp: false,
-        includeTmpDir: false,
-      }
-    )) + ".gcode";
+  const now = new Date();
+  const year = now.getFullYear();
+  const monthNum = now.getMonth() + 1;
+  const month = monthNum < 10 ? `0${monthNum}` : monthNum;
+
+  const tempFileName = await getTempFileName(
+    `${originalFileNameWithoutDirAndSuffix}_${nameOfPlateWithoutDirAndSuffix}`,
+    {
+      includeTimestamp: false,
+      includeTmpDir: false,
+    }
+  );
+
+  const destinationFileName = `${year}-${month}/${tempFileName}.gcode`;
 
   const formData = new FormData();
   formData.append(
