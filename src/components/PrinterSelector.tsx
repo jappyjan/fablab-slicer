@@ -129,7 +129,6 @@ export function PrinterSelector({
         show={showPopup}
         title={popupTitle}
         description={popupDescription}
-        onClose={() => onPopupClose()}
         buttons={popupButtons}
       />
     </div>

@@ -8,33 +8,19 @@ interface PopupProps {
   show: boolean;
   title: { english: string; german: string } | null;
   description: { english: string; german: string } | null;
-  onClose: () => void;
   buttons?: PopupButton[];
 }
 
-export function Popup({
-  title,
-  description,
-  onClose,
-  show,
-  buttons = [],
-}: PopupProps) {
+export function Popup({ title, description, show, buttons = [] }: PopupProps) {
   if (!show || !title || !description) {
     return null;
   }
 
-  const defaultButton: PopupButton = {
-    label: { german: "OK", english: "OK" },
-    onClick: onClose,
-    variant: "primary",
-  };
-
-  const buttonsToRender = buttons.length > 0 ? buttons : [defaultButton];
+  const buttonsToRender = buttons.length > 0 ? buttons : [];
 
   return (
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50"
-      onClick={onClose}
       style={{
         marginTop: 0,
       }}
