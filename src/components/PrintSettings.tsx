@@ -96,7 +96,7 @@ export function PrintSettings({
           )}
         </div>
 
-        {(selectedPrinter.availableBuildPlates?.length ?? 0) > 0 && (
+        {(selectedPrinter.availableBuildPlates?.length ?? 0) > 1 ? (
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Druckplatte | Build Plate
@@ -118,6 +118,8 @@ export function PrintSettings({
               ))}
             </select>
           </div>
+        ) : (
+          <span>{buildPlateType ?? ""}</span>
         )}
 
         <div>
