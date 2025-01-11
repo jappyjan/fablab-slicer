@@ -58,16 +58,26 @@ async function getPrinterDefinitionsOfManufacturer(
     join(process.cwd(), "slicer-configs", manufacturer)
   );
   const printerConfigs = await Promise.all(
-    models.map((model) => getPrinterDefinition_serverOnly(manufacturer, model))
+    models.map((model) => {
+      if (model.startsWith(".")) {
+        return null;
+      }
+      return getPrinterDefinition_serverOnly(manufacturer, model);
+    })
   );
 
-  return printerConfigs;
+  return printerConfigs.filter((config) => config !== null);
 }
 
 export async function getAllPrinterDefinitions_serverOnly(): Promise<
   PrinterWithModelDefinition[]
 > {
-  const manufacturers = await readdir(join(process.cwd(), "slicer-configs"));
+  const manufacturersDirectories = await readdir(
+    join(process.cwd(), "slicer-configs")
+  );
+  const manufacturers = manufacturersDirectories.filter(
+    (dir) => !dir.startsWith(".")
+  );
 
   const definitions = (
     await Promise.all(manufacturers.map(getPrinterDefinitionsOfManufacturer))
@@ -153,7 +163,10 @@ async function getFilamentConfigurationsForNozzleSizeAndPrinter(
     ];
   }
 
-  const configFileNames = await readdir(configurationsDirectory);
+  const configFileNamesAll = await readdir(configurationsDirectory);
+  const configFileNames = configFileNamesAll.filter(
+    (fileName) => !fileName.startsWith(".")
+  );
 
   const rawConfigFiles = await Promise.all(
     configFileNames.map(async (fileName) => {

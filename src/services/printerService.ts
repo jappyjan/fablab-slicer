@@ -337,7 +337,8 @@ async function uploadGCodesToKlipper(
   directory: string,
   originalFileName: string
 ) {
-  const plates = await readdir(directory);
+  const platesFiles = await readdir(directory);
+  const plates = platesFiles.filter((fileName) => !fileName.startsWith("."));
 
   const destinationFileNames: string[] = [];
   for (const plate of plates) {
