@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { usePrinterConfigs } from "@/hooks/printer-configs";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { PrinterWithModelDefinition } from "@/types/printer";
@@ -63,6 +63,18 @@ export function PrintSettings({
       onNozzleSizeChange(selectedPrinter.availableNozzleSizes[0] ?? null);
     }
   }, [selectedPrinter]);
+
+  const matchingFilamentConfigs = useMemo(() => {
+    const filamentConfigs = configs?.filament ?? [];
+    return filamentConfigs.filter((config) => {
+      if (!Array.isArray(selectedPrinter.availableMaterials)) {
+        return true;
+      }
+      return selectedPrinter.availableMaterials.some((material) =>
+        config.name.toLowerCase().includes(material.toLowerCase())
+      );
+    });
+  }, [configs, selectedPrinter]);
 
   return (
     <div className="space-y-4">
@@ -158,7 +170,7 @@ export function PrintSettings({
                 Filament auswählen | Select Filament
               </option>
             )}
-            {configs?.filament.map((configFile) => (
+            {matchingFilamentConfigs.map((configFile) => (
               <option key={configFile.path} value={configFile.path}>
                 {configFile.name}
               </option>

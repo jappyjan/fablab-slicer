@@ -91,6 +91,7 @@ export async function getAllPrinterDefinitions_serverOnly(): Promise<
         imagePath: model.imagePath,
         name: printer.name,
         availableNozzleSizes: printer.availableNozzleSizes,
+        availableMaterials: printer.availableMaterials,
         availableBuildPlates: model.availableBuildPlates,
         defaultBuildPlate: printer.defaultBuildPlate,
         connection: printer.connection,

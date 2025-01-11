@@ -32,6 +32,7 @@ export interface KlipperConnectionDetails {
 export interface PrinterDefinition {
   name: string;
   availableNozzleSizes: number[];
+  availableMaterials: string[];
   defaultBuildPlate: string;
   popups?: {
     onSelect?: {

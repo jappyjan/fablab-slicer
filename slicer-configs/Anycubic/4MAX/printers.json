@@ -1,5 +1,6 @@
 {
-  "printers": [
+  "printers": [],
+  "not_printers": [
     {
       "name": "Anycubic 4MAX",
       "availableNozzleSizes": [0.4],

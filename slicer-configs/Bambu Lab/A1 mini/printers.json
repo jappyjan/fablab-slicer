@@ -10,6 +10,7 @@
       "name": "mit AMS",
       "availableNozzleSizes": [0.4],
       "defaultBuildPlate": "Textured PEI Plate",
+      "availableMaterials": ["PLA"],
       "connection": {
         "type": "BambuLab FTP",
         "ipAddress": "192.168.178.150",
@@ -32,10 +33,11 @@
       "name": "ohne AMS",
       "availableNozzleSizes": [0.4],
       "defaultBuildPlate": "Textured PEI Plate",
+      "availableMaterials": ["PLA", "TPU"],
       "connection": {
         "type": "BambuLab FTP",
-        "ipAddress": "192.168.1.101",
-        "accessCode": "1235"
+        "ipAddress": "192.168.178.150",
+        "accessCode": "888888"
       }
     }
   ]
