@@ -153,111 +153,154 @@ export function PrintWorkflow() {
   }, []);
 
   return (
-    <form onSubmit={onSubmit} className="min-h-screen bg-gray-50 py-8">
-      <div className="mx-auto max-w-3xl px-4">
-        <div className="mb-8 flex items-center gap-3">
-          <PrinterIcon className="h-8 w-8 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Scheibierer 4000</h1>
-        </div>
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <form onSubmit={onSubmit} className="flex-grow py-8">
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="mb-8 flex items-center gap-3">
+            <PrinterIcon className="h-8 w-8 text-blue-600" />
+            <h1 className="text-2xl font-bold text-gray-900">
+              Scheibierer 4000
+            </h1>
+          </div>
 
-        <div className="space-y-6">
-          <CollapsiblePanel
-            title={
-              selectedFile
-                ? selectedFile.name
-                : "STL Datei hochladen | Upload STL File"
-            }
-            icon={UploadIcon}
-            isOpen={activeStep === "choose_file"}
-            onToggle={() => setActiveStep("choose_file")}
-          >
-            <FileUpload onFileSelect={handleFileSelect} />
-            {selectedFile && (
-              <p className="mt-2 text-sm text-gray-600">
-                Gewählte Date | Selected file: {selectedFile.name}
-              </p>
-            )}
-          </CollapsiblePanel>
-
-          {selectedFile && (
+          <div className="space-y-6">
             <CollapsiblePanel
               title={
-                selectedPrinter
-                  ? selectedPrinter.name
-                  : "Drucker auswählen | Select Printer"
+                selectedFile
+                  ? selectedFile.name
+                  : "STL Datei hochladen | Upload STL File"
               }
-              icon={PrinterIcon}
-              isOpen={activeStep === "choose_printer"}
-              onToggle={() => setActiveStep("choose_printer")}
+              icon={UploadIcon}
+              isOpen={activeStep === "choose_file"}
+              onToggle={() => setActiveStep("choose_file")}
             >
-              <PrinterSelector
-                selectedPrinter={selectedPrinter}
-                onPrinterSelect={handlePrinterSelect}
-              />
+              <FileUpload onFileSelect={handleFileSelect} />
+              {selectedFile && (
+                <p className="mt-2 text-sm text-gray-600">
+                  Gewählte Date | Selected file: {selectedFile.name}
+                </p>
+              )}
             </CollapsiblePanel>
-          )}
 
-          {selectedPrinter !== null && (
-            <CollapsiblePanel
-              title="Druck Einstellungen | Print Settings"
-              icon={SettingsIcon}
-              isOpen={activeStep === "settings"}
-              onToggle={() => setActiveStep("settings")}
-            >
-              <PrintSettings
-                nozzleSize={nozzleSize}
-                processConfigFile={processConfigFile}
-                filamentConfigFile={filamentConfigFile}
-                needsSupports={needsSupports}
-                buildPlateType={buildPlateType}
-                onNozzleSizeChange={setNozzleSize}
-                onProcessConfigFileChange={setProcessConfigFile}
-                onFilamentConfigFileChange={setFilamentConfigFile}
-                onNeedsSupportsChange={setNeedsSupports}
-                onBuildPlateTypeChange={setBuildPlateType}
-                selectedPrinter={selectedPrinter}
-              />
-
-              <button
-                disabled={
-                  !nozzleSize ||
-                  !processConfigFile ||
-                  !filamentConfigFile ||
-                  !selectedPrinter
+            {selectedFile && (
+              <CollapsiblePanel
+                title={
+                  selectedPrinter
+                    ? selectedPrinter.name
+                    : "Drucker auswählen | Select Printer"
                 }
-                type="submit"
-                className="mt-6 w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                icon={PrinterIcon}
+                isOpen={activeStep === "choose_printer"}
+                onToggle={() => setActiveStep("choose_printer")}
               >
-                Hochladen und Verarbeiten | Upload and Process
-              </button>
-            </CollapsiblePanel>
-          )}
+                <PrinterSelector
+                  selectedPrinter={selectedPrinter}
+                  onPrinterSelect={handlePrinterSelect}
+                />
+              </CollapsiblePanel>
+            )}
 
-          {slicingProgress > 0 && (
-            <div className="rounded-lg bg-white p-6 shadow">
-              <ProgressIndicator
-                progress={slicingProgress}
-                infinite={isHugeFile}
-                label="Slicing"
+            {selectedPrinter !== null && (
+              <CollapsiblePanel
+                title="Druck Einstellungen | Print Settings"
+                icon={SettingsIcon}
+                isOpen={activeStep === "settings"}
+                onToggle={() => setActiveStep("settings")}
+              >
+                <PrintSettings
+                  nozzleSize={nozzleSize}
+                  processConfigFile={processConfigFile}
+                  filamentConfigFile={filamentConfigFile}
+                  needsSupports={needsSupports}
+                  buildPlateType={buildPlateType}
+                  onNozzleSizeChange={setNozzleSize}
+                  onProcessConfigFileChange={setProcessConfigFile}
+                  onFilamentConfigFileChange={setFilamentConfigFile}
+                  onNeedsSupportsChange={setNeedsSupports}
+                  onBuildPlateTypeChange={setBuildPlateType}
+                  selectedPrinter={selectedPrinter}
+                />
+
+                <button
+                  disabled={
+                    !nozzleSize ||
+                    !processConfigFile ||
+                    !filamentConfigFile ||
+                    !selectedPrinter
+                  }
+                  type="submit"
+                  className="mt-6 w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  Hochladen und Verarbeiten | Upload and Process
+                </button>
+              </CollapsiblePanel>
+            )}
+
+            {slicingProgress > 0 && (
+              <div className="rounded-lg bg-white p-6 shadow">
+                <ProgressIndicator
+                  progress={slicingProgress}
+                  infinite={isHugeFile}
+                  label="Slicing"
+                />
+              </div>
+            )}
+
+            {errorMessage && (
+              <ErrorDisplay
+                errorMessage={errorMessage}
+                onRetry={startPrint}
+                hasRetry={activeStep === "slice_file"}
               />
-            </div>
-          )}
-
-          {errorMessage && (
-            <ErrorDisplay
-              errorMessage={errorMessage}
-              onRetry={startPrint}
-              hasRetry={activeStep === "slice_file"}
-            />
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      </form>
+
+      <footer className="py-8">
+        <div className="mx-auto max-w-3xl px-4 text-center text-sm text-gray-600">
+          <p>
+            Entwickelt von | Developed by{" "}
+            <a
+              href="https://github.com/JappyJan"
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              JappyJan
+            </a>
+          </p>
+          <p className="mt-2">
+            Quellcode verfügbar auf | Source code available on{" "}
+            <a
+              href="https://github.com/jappyjan/fablab-slicer"
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+          </p>
+          <p className="mt-2">
+            Fehler gefunden oder Verbesserungsvorschlag? | Found a bug or have a
+            feature request?{" "}
+            <a
+              href="https://github.com/jappyjan/fablab-slicer/issues"
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Issue erstellen | Create an issue
+            </a>
+          </p>
+        </div>
+      </footer>
 
       <SuccessModal
         isOpen={activeStep === "success"}
         onClose={resetWorkflow}
         fileNames={slicedFileNames ?? []}
       />
-    </form>
+    </div>
   );
 }
