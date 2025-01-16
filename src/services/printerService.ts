@@ -62,14 +62,14 @@ async function cleanupConfig(
   configType: "machine" | "process" | "filament",
   configFileName: string,
   temporaryConfigFileName: string,
-  additionalSettings: Record<string, any>
+  additionalSettings?: Record<string, any>
 ) {
   const content = await readFile(configFileName, "utf-8");
   const parsedContent = JSON.parse(content);
 
   let fullConfig = merge(
     cloneDeep(parsedContent),
-    cloneDeep(additionalSettings)
+    cloneDeep(additionalSettings ?? {})
   );
 
   let nextInheritance = parsedContent.inherits;
