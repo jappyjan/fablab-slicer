@@ -26,7 +26,8 @@ import { execSync } from "child_process";
 import { LOG_LEVEL, SLICER_EXECUTABLE_PATH } from "@/utils/config";
 import { Console } from "@/utils/console";
 import { BackendResponse, sendError, sendSuccess } from "@/utils/backend";
-import { mergeDeep } from "@/utils/object";
+import merge from "lodash/merge";
+import cloneDeep from "lodash/cloneDeep";
 
 let _tempDirExistanceChecked = false;
 async function getTempFileName(
@@ -58,21 +59,42 @@ async function getTempFileName(
 }
 
 async function cleanupConfig(
+  configType: "machine" | "process" | "filament",
   configFileName: string,
   temporaryConfigFileName: string,
-  additionalSettings: Record<string, any> = {}
+  additionalSettings: Record<string, any>
 ) {
   const content = await readFile(configFileName, "utf-8");
   const parsedContent = JSON.parse(content);
 
-  const cleanedConfig = JSON.stringify(
-    mergeDeep(parsedContent, additionalSettings),
-    null,
-    2
+  let fullConfig = merge(
+    cloneDeep(parsedContent),
+    cloneDeep(additionalSettings)
   );
-  await writeFile(temporaryConfigFileName, cleanedConfig);
 
-  Console.debug("Cleaned config", temporaryConfigFileName, cleanedConfig);
+  let nextInheritance = parsedContent.inherits;
+  while (nextInheritance) {
+    const inheritedConfigPath = join(
+      process.cwd(),
+      "original-bbl-configs",
+      configType,
+      nextInheritance + ".json"
+    );
+    Console.debug("Inheriting", nextInheritance, "from", inheritedConfigPath);
+    const inheritedConfig = await readFile(inheritedConfigPath, "utf-8");
+    const parsedInheritedConfig = JSON.parse(inheritedConfig);
+    fullConfig = merge(cloneDeep(parsedInheritedConfig), cloneDeep(fullConfig));
+    Console.debug(
+      "Setting next inheritance to",
+      parsedInheritedConfig.inherits
+    );
+    nextInheritance = parsedInheritedConfig.inherits;
+  }
+
+  const fullConfigJson = JSON.stringify(fullConfig, null, 2);
+  await writeFile(temporaryConfigFileName, fullConfigJson);
+
+  Console.debug("Cleaned config", temporaryConfigFileName, fullConfigJson);
 }
 
 // https://github.com/bambulab/BambuStudio/wiki/Command-Line-Usage
@@ -167,6 +189,7 @@ async function sliceSTL(
     temporaryMachineConfigurationFileName
   );
   await cleanupConfig(
+    "machine",
     machineConfigurationFileName,
     temporaryMachineConfigurationFileName
   );
@@ -177,15 +200,16 @@ async function sliceSTL(
     fullMachineName,
   });
   await cleanupConfig(
+    "process",
     processConfigurationFileName,
     temporaryProcessConfigurationFileName,
     {
       enable_support: settings.needsSupports ? "1" : "0",
       support_type: "tree(auto)",
-      compatible_printers: [
+      /*compatible_printers: [
         fullMachineName,
         `MyKlipper ${settings.nozzleSize} nozzle`,
-      ],
+      ],*/
     }
   );
 
@@ -194,6 +218,7 @@ async function sliceSTL(
     temporaryFilamentConfigurationFileName
   );
   await cleanupConfig(
+    "filament",
     filamentConfigurationFileName,
     temporaryFilamentConfigurationFileName
   );

@@ -7,14 +7,25 @@
   ],
   "printers": [
     {
-      "name": "mit AMS",
+      "name": "ohne AMS",
       "availableNozzleSizes": [0.4],
       "defaultBuildPlate": "Textured PEI Plate",
-      "availableMaterials": ["PLA"],
+      "availableMaterials": ["PLA", "PETG", "TPU"],
       "connection": {
         "type": "BambuLab FTP",
-        "ipAddress": "192.168.178.150",
-        "accessCode": "888888"
+        "ipAddress": "192.168.0.100",
+        "accessCode": "94261826"
+      }
+    },
+    {
+      "name": "mit AMS",
+      "availableNozzleSizes": [0.4],
+      "availableMaterials": ["PLA", "PETG"],
+      "defaultBuildPlate": "Textured PEI Plate",
+      "connection": {
+        "type": "BambuLab FTP",
+        "ipAddress": "192.168.1.155",
+        "accessCode": "32568290"
       },
       "popups": {
         "onSelect": {
@@ -27,17 +38,6 @@
             "english": "The AMS (Color changer/Filament changer) is only needed if you want to print with multiple colors. If you don't need it, it would be cool if you use the printer without AMS and let the AMS free for other members."
           }
         }
-      }
-    },
-    {
-      "name": "ohne AMS",
-      "availableNozzleSizes": [0.4],
-      "defaultBuildPlate": "Textured PEI Plate",
-      "availableMaterials": ["PLA", "TPU"],
-      "connection": {
-        "type": "BambuLab FTP",
-        "ipAddress": "192.168.178.150",
-        "accessCode": "888888"
       }
     }
   ]

@@ -35,6 +35,9 @@ RUN /config/.volta/bin/volta install node@20
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package*.json ./
 
+# Copy the original-bbl-configs from the builder stage
+COPY --from=builder /app/original-bbl-configs ./original-bbl-configs
+
 # Install only production dependencies
 RUN npm install --only=production
 

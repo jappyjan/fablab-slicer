@@ -1,5 +1,4 @@
 {
-  "type": "filament",
   "filament_settings_id": ["Generic PLA @BBL A1M - For Dummies"],
   "from": "User",
   "inherits": "Generic PLA @BBL A1M",

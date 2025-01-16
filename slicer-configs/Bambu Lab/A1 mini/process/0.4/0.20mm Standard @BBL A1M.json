@@ -1,5 +1,4 @@
 {
-  "type": "process",
   "from": "User",
   "inherits": "0.20mm Standard @BBL A1M",
   "is_custom_defined": "0",
