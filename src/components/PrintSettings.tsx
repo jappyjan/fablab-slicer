@@ -10,11 +10,13 @@ interface PrintSettingsProps {
   filamentConfigFile: string | null;
   needsSupports: boolean;
   buildPlateType: string | null;
+  autoOrient: boolean;
   onNozzleSizeChange: (nozzleSize: number | null) => void;
   onProcessConfigFileChange: (processConfigFile: string | null) => void;
   onFilamentConfigFileChange: (filamentConfigFile: string | null) => void;
   onNeedsSupportsChange: (needsSupports: boolean) => void;
   onBuildPlateTypeChange: (buildPlateType: string | null) => void;
+  onAutoOrientChange: (autoOrient: boolean) => void;
 }
 
 export function PrintSettings({
@@ -24,11 +26,13 @@ export function PrintSettings({
   filamentConfigFile,
   needsSupports,
   buildPlateType,
+  autoOrient,
   onNozzleSizeChange,
   onProcessConfigFileChange,
   onFilamentConfigFileChange,
   onNeedsSupportsChange,
   onBuildPlateTypeChange,
+  onAutoOrientChange,
 }: PrintSettingsProps) {
   const {
     configs,
@@ -188,6 +192,20 @@ export function PrintSettings({
             />
             <span className="text-sm font-medium text-gray-700">
               Unterstützungen generieren | Generate Supports
+            </span>
+          </label>
+        </div>
+
+        <div>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={autoOrient}
+              onChange={(e) => onAutoOrientChange(e.target.checked)}
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm font-medium text-gray-700">
+              Automatisch Ausrichten | Auto Orient
             </span>
           </label>
         </div>

@@ -10,6 +10,7 @@ export const PrintSettingsSchema = z.object({
   filamentConfigFile: z.string(),
   needsSupports: z.boolean(),
   buildPlateType: z.string().optional(),
+  autoOrient: z.boolean().default(true),
 });
 
 // TypeScript types from Zod schemas

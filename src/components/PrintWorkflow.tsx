@@ -37,6 +37,7 @@ export function PrintWorkflow() {
   );
   const [buildPlateType, setBuildPlateType] = useState<string | null>(null);
   const [needsSupports, setNeedsSupports] = useState(false);
+  const [autoOrient, setAutoOrient] = useState(true);
   const [slicingProgress, setSlicingProgress] = useState(0);
   const [activeStep, setActiveStep] = useState<StepName>("choose_file");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -83,6 +84,7 @@ export function PrintWorkflow() {
       formData.set("settings_filamentConfigFile", filamentConfigFile!);
       formData.set("settings_needsSupports", needsSupports.toString());
       formData.set("settings_buildPlateType", buildPlateType!);
+      formData.set("settings_autoOrient", autoOrient.toString());
 
       const MAX_PROGRESS = 95;
       const increaseProgress = () => {
@@ -128,6 +130,7 @@ export function PrintWorkflow() {
     filamentConfigFile,
     needsSupports,
     buildPlateType,
+    autoOrient,
   ]);
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
@@ -147,6 +150,7 @@ export function PrintWorkflow() {
     setProcessConfigFile(null);
     setFilamentConfigFile(null);
     setNeedsSupports(false);
+    setAutoOrient(true);
     setIsHugeFile(false);
     setSelectedFile(null);
     setErrorMessage(null);
@@ -213,11 +217,13 @@ export function PrintWorkflow() {
                   filamentConfigFile={filamentConfigFile}
                   needsSupports={needsSupports}
                   buildPlateType={buildPlateType}
+                  autoOrient={autoOrient}
                   onNozzleSizeChange={setNozzleSize}
                   onProcessConfigFileChange={setProcessConfigFile}
                   onFilamentConfigFileChange={setFilamentConfigFile}
                   onNeedsSupportsChange={setNeedsSupports}
                   onBuildPlateTypeChange={setBuildPlateType}
+                  onAutoOrientChange={setAutoOrient}
                   selectedPrinter={selectedPrinter}
                 />
 

@@ -229,7 +229,7 @@ async function sliceSTL(
   }
 
   const command = `"${SLICER_EXECUTABLE_PATH}"
---orient 1
+--orient ${settings.autoOrient ? "1" : "0"}
 --arrange 1
 --load-settings "${temporaryMachineConfigurationFileName}"
 --load-settings "${temporaryProcessConfigurationFileName}"
@@ -482,56 +482,59 @@ export async function handleFileUpload(
     return sendError("Invalid file");
   }
 
-  const settings = PrintSettingsSchema.parse({
-    printerManufacturer: formData.get("printer_manufacturer"),
-    printerModel: formData.get("printer_model"),
-    printerName: formData.get("printer_name"),
-    nozzleSize: parseFloat(formData.get("settings_nozzleSize") as string),
-    processConfigFile: formData.get("settings_processConfigFile"),
-    filamentConfigFile: formData.get("settings_filamentConfigFile"),
-    needsSupports: formData.get("settings_needsSupports") === "true",
-    buildPlateType: formData.get("settings_buildPlateType"),
-  });
-  Console.debug("FormData parsed", settings);
-
-  let slicedFileName: string | null = null;
   try {
-    const printerModel = await getPrinterDefinition_serverOnly(
-      settings.printerManufacturer,
-      settings.printerModel
-    );
-    const printer = printerModel.printers.find(
-      (printer) => printer.name === settings.printerName
-    );
-
-    if (!printer) {
-      return sendError("Printer not found");
-    }
-
-    slicedFileName = await sliceSTL(file, settings, printer);
-    Console.debug("Sliced STL", slicedFileName);
-
-    const fileNames = await uploadToPrinter(printer, slicedFileName, file.name);
-    Console.debug("Uploaded 3MF to printer");
-
-    return sendSuccess({
-      fileNames,
+    const settings = PrintSettingsSchema.parse({
+      printerManufacturer: formData.get("printer_manufacturer"),
+      printerModel: formData.get("printer_model"),
+      printerName: formData.get("printer_name"),
+      nozzleSize: parseFloat(formData.get("settings_nozzleSize") as string),
+      processConfigFile: formData.get("settings_processConfigFile"),
+      filamentConfigFile: formData.get("settings_filamentConfigFile"),
+      needsSupports: formData.get("settings_needsSupports") === "true",
+      buildPlateType: formData.get("settings_buildPlateType"),
+      autoOrient: formData.get("settings_autoOrient") !== "false",
     });
-  } catch (error) {
-    return sendError(error as string);
-  } finally {
-    if (slicedFileName && existsSync(slicedFileName)) {
-      Console.debug("Deleting sliced file", slicedFileName);
-      // if is dir use rmdir, else use unlink
-      if (statSync(slicedFileName).isDirectory()) {
-        Console.debug("Deleting sliced directory", slicedFileName);
-        await rmdir(slicedFileName, {
-          recursive: true,
-        });
-      } else {
-        Console.debug("Deleting sliced file", slicedFileName);
-        await unlink(slicedFileName);
+    Console.debug("FormData parsed", settings);
+
+    let slicedFileName: string | null = null;
+    try {
+      const printerModel = await getPrinterDefinition_serverOnly(
+        settings.printerManufacturer,
+        settings.printerModel
+      );
+      const printer = printerModel.printers.find(
+        (printer) => printer.name === settings.printerName
+      );
+
+      if (!printer) {
+        return sendError("Printer not found", "PRINTER_NOT_FOUND");
+      }
+
+      slicedFileName = await sliceSTL(file, settings, printer);
+      Console.debug("Sliced STL", slicedFileName);
+
+      const fileNames = await uploadToPrinter(printer, slicedFileName, file.name);
+      Console.debug("Uploaded 3MF to printer");
+
+      return sendSuccess({ fileNames });
+    } catch (error) {
+      Console.error("Error processing file", error);
+      return sendError((error as Error).message);
+    } finally {
+      // Cleanup temp file
+      if (slicedFileName) {
+        try {
+          if (existsSync(slicedFileName)) {
+            Console.debug("Removing temporary file", slicedFileName);
+            await unlink(slicedFileName);
+          }
+        } catch (error) {
+          Console.error("Error removing temporary file", error);
+        }
       }
     }
+  } catch (error) {
+    Console.error("Error parsing form data", error);
+    return sendError((error as Error).message);
   }
 }
