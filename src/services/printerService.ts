@@ -507,7 +507,7 @@ export async function handleFileUpload(
       );
 
       if (!printer) {
-        return sendError("Printer not found", "PRINTER_NOT_FOUND");
+        return sendError("Printer not found");
       }
 
       slicedFileName = await sliceSTL(file, settings, printer);
